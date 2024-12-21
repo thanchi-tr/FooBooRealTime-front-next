@@ -220,15 +220,25 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             bg-foregroundShadow/5 shadow-2xl 
             shadow-black rounded-sm
             `}
-
+            onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
+                event.preventDefault(); // Prevent the default form submission behavior
+                setIsAdjustTime((prev) => !prev);
+            }}
         >
             <label
                 className={`absolute top-[15vw] 
-                    p-2
+                    p-2 rounded-sm
                     uppercase font-mainfont font-extrabold  
                     bg-foreground/80
                     shadow-inner shadow-black`}
+                onClick={() => setIsAdjustTime(prev => !prev)}
             > set game time</label>
+            <div
+                className="absolute top-0 h-full w-full z-0
+                hover:cursor-pointer
+                "
+                onClick={() => setIsAdjustTime(prev => !prev)}
+            ></div>
             <input
                 type="number"
                 spellCheck="false"
@@ -238,10 +248,9 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     potentialTime = potentialTime < 0 ? 0 : potentialTime;
                     setTime(potentialTime);
                     invoke("SupplyGameTime", potentialTime);
-                    console.log(potentialTime);
                 }} // Update state on input change
                 placeholder="Enter your answer"
-                className={`box-border
+                className={`box-border z-50
                     bg-foreground rounded-md text-textColour text-3xl pl-2 text-center
                     font-mainfont w-1/6 aspect-square scale-125 overflow-hidden
                     appearance-none focus:outline-none`}

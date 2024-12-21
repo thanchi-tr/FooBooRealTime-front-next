@@ -180,7 +180,9 @@ const SessionPresentation = () => {
                                 </div>
 
 
-                            : <LoadingScreen></LoadingScreen>}
+                            : <div
+                                className="w-[70%] h-full border-y-4 border-white/20 rounded-lg overflow-clip"
+                            >  <LoadingScreen></LoadingScreen> </div>}
                 </div>
 
             </div>
