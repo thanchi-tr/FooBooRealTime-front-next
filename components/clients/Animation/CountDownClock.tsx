@@ -1,6 +1,5 @@
 'use client';
-import { color, motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 /**
  * This is a square count down timer
  * native design size (mobile) h-[35vw]

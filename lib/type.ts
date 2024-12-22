@@ -1,5 +1,3 @@
-export interface ScoreBoardT {}
-
 export interface SessionT {
   sessionId: string;
   gameName: string;

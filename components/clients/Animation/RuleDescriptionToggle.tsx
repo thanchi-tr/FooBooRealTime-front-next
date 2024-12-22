@@ -1,11 +1,11 @@
 
 
 interface RuleTogglerConfig {
-    isRuleOpen: Boolean,
+    isRuleOpen: boolean,
     rules: { Key: number, Value: string }[],
     openHandler: () => void,
     size: number,
-    isHiding?: Boolean
+    isHiding?: boolean
 }
 const Rule = ({ isRuleOpen, rules, openHandler, size = 1, isHiding = false }: RuleTogglerConfig) => {
     return (
@@ -29,9 +29,9 @@ const Rule = ({ isRuleOpen, rules, openHandler, size = 1, isHiding = false }: Ru
                     size == 0 ? "scale-[85%]" : "scale-100"
                 }
                 text-pretty h-auto font-bold font-mainfont`}>
-                "The answer is determined by
+                The answer is determined by
                 <p className="inline uppercase underline text-black/80">combining</p> the
-                <p className="inline text-black/80"> right terms</p> if the question is <p className="inline uppercase underline text-black/80"> divisible</p> by the corresponding <p className="inline text-black/80"> left number</p>."
+                <p className="inline text-black/80"> right terms</p> if the question is <p className="inline uppercase underline text-black/80"> divisible</p> by the corresponding <p className="inline text-black/80"> left number</p>.
             </div>
 
             <div className={`

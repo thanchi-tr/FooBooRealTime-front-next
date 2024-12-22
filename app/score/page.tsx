@@ -7,10 +7,6 @@ import { scoreT } from "@/lib/type";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
-interface scoreScreenConfig {
-    playerScores: { playerName: string, count: number }[],
-}
-
 const ScoreScreen = () => {
     const [playerScores, setPlayerScores] = useState<{ playerName: string, count: number }[]>([])
     const { id, name } = useSessionContext();
@@ -47,7 +43,7 @@ const ScoreScreen = () => {
             } else {
                 connection.on("SupplyScoreBoard", (scoreBoard: scoreT[]) => {
                     console.log(scoreBoard);
-                    const _playerScores = scoreBoard.map(({ playerConnectionId, correctCount, IsReady, IsDisconnect }: scoreT) => {
+                    const _playerScores = scoreBoard.map(({ correctCount }: scoreT) => {
                         // You can now use these variables to transform the object
                         return {
                             playerName: /*playerConnectionId*/ "June",

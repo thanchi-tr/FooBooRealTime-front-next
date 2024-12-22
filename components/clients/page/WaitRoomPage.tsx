@@ -12,15 +12,13 @@ import LoadingScreen from "../Animation/LoadingScreen";
 import { useSearchParams } from 'next/navigation';
 const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     const searchParams = useSearchParams();
-    let players: { name: string, isReady: boolean }[] = [
+    const [playerState, setPlayerState] = useState([
         { name: "june", isReady: false },
-    ]
-    const [playerState, setPlayerState] = useState(players)
-    const [isHost, setIsHost] = useState(true);
+    ])
     const [isAdjustTime, setIsAdjustTime] = useState(false);
     const { name, rules, id, setName, setRules, setId, setQuestion, time, setTime } = useSessionContext();
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(!(searchParams.get("isOpenRule") == "false"), !(searchParams.get("isOpenRule") == "false"));
-    const { connect, isConnect, connection, invoke } = useSignalRContext();
+    const { connect, connection, invoke } = useSignalRContext();
     const { isLoaded, startLoading, loadComplete } = useLoadingContext();
     const router = useRouter();
 
@@ -40,7 +38,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     gameName: string,
                     rules_: Map<string, string>,
                 ) => {
-                    let sanitisedRules = Object.entries(rules_).map(([key, value]) => ({
+                    const sanitisedRules = Object.entries(rules_).map(([key, value]) => ({
                         Key: Number(key), // Ensure key is a number if necessary
                         Value: value
                     }))
@@ -76,10 +74,8 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         }, [playerState]
     )
     const playerReadyToggle = useCallback((index: number) => {
-        if (connection == null)
-            // console.log("Error occur when attempt to toggle player state");
-            true;
-        else {
+        if (connection != null) {
+
             invoke("TogglePlayerReady");
         }
         setPlayerState((prev) => {
@@ -196,9 +192,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             {name}
             <div className={
                 `relative
-                ${isHost
-                    ? "bg-foreground/70 rounded-3xl hover:bg-foreground hover:cursor-pointer hover:text-white text-black px-2"
-                    : ""} `}
+                bg-foreground/70 rounded-3xl hover:bg-foreground hover:cursor-pointer hover:text-white text-black px-2 `}
                 onClick={() => setIsAdjustTime(prev => !prev)}
             >{time} {time < 2 ? "minute " : "minutes"}
 

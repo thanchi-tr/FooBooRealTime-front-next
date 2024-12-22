@@ -7,14 +7,11 @@ import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import LoadingScreen from "./LoadingScreen"
 
-interface SessionPresentationConfig {
-    sessions: { name: string, ruleCount: number }[]
-}
 const SessionPresentation = () => {
     const router = useRouter()
     const [sessions, setSessions] = useState<SessionT[]>([]);
-    const { isLoaded, startLoading, loadComplete } = useLoadingContext();
-    const { connect, isConnect, connection, invoke } = useSignalRContext();
+    const { isLoaded, loadComplete } = useLoadingContext();
+    const { connect, connection, invoke } = useSignalRContext();
     const handleSessionClick = useCallback(
         (id: string) => {
 

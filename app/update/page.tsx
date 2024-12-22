@@ -2,7 +2,7 @@
 
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCallback, useContext, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface gameContext {
     author: string,
@@ -12,11 +12,8 @@ interface gameContext {
     rules: string
 }
 const UpdateGamesContext = () => {
-    const [nameOptions, setNameOptions] = useState<string[]>([])
     const [contexts, setContexts] = useState<gameContext[]>([])
-    const [isShowOption, setIsShowOption] = useState(false);
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1);
-    const [updated, setUpdated] = useState<gameContext | undefined>(undefined)
     const router = useRouter();
     const toHomeClickHandler = useCallback(
         () => { router.push("/home") }
@@ -142,7 +139,6 @@ const UpdateGamesContext = () => {
                             rounded-md text-center text-textColour
                             hover:cursor-pointer hover:border-black/80 border-2 border-transparent
                             bg-foreground `}
-                onClick={() => setIsShowOption(prev => !prev)}
             >...
 
             </div>
@@ -155,11 +151,8 @@ const UpdateGamesContext = () => {
                         rounded-md pr-[5%]
                         hover:cursor-pointer
                         font-mainfont text-end
-                        ${nameOptions.length == 0 ? "text-textColour/50" : ""}
+                        
                         `}
-                onClick={() => {
-                    setIsShowOption(prev => !prev)
-                }}
 
             >{selectedOptionIndex == -1
                 ? <p className="text-black/30"> Game ID</p>
@@ -233,7 +226,6 @@ const UpdateGamesContext = () => {
                             rounded-md text-center text-textColour
                             hover:cursor-pointer hover:border-black/80 border-2 border-transparent
                             bg-foreground `}
-                            onClick={() => setIsShowOption(prev => !prev)}
                         >range
 
                         </div>

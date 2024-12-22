@@ -27,11 +27,6 @@ const LoadingScreen = () => {
 
         },
     }
-    const actorVariant = {
-        "init": {
-            opacity: 0
-        }
-    }
     return (<div
         className={`
             ${isLoaded ? "hidden" : "flex"}

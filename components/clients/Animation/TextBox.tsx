@@ -7,9 +7,9 @@ interface textBoxConfig {
     children?: ReactNode,
     isTimeUp: boolean
 }
-const TextBox = ({ children, isTimeUp }: textBoxConfig) => {
+const TextBox = ({ isTimeUp }: textBoxConfig) => {
     const [inputValue, setInputValue] = useState(""); // State to store the input value
-    const { connect, isConnect, connection, invoke } = useSignalRContext();
+    const { connect, connection, invoke } = useSignalRContext();
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setInputValue(e.target.value)
     };

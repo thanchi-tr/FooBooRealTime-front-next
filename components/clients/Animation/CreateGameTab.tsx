@@ -1,6 +1,5 @@
 'use client';
 import axios from "axios";
-import { button } from "framer-motion/client";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
 
@@ -209,7 +208,7 @@ const CreateGameTab = () => {
                         text-pretty h-auto font-bold font-mainfont`}>
 
                             <p className="inline uppercase underline text-black/80">combining</p> the
-                            <p className="inline text-black/80">  Key</p> if the question is <p className="inline uppercase underline text-black/80"> divisible</p> by corresponding <p className="inline text-black/80"> Substitute</p>."
+                            <p className="inline text-black/80">  Key</p> if the question is <p className="inline uppercase underline text-black/80"> divisible</p> by corresponding <p className="inline text-black/80"> Substitute</p>.
                         </div>
                     </div>
                     <div
@@ -285,8 +284,7 @@ const CreateGameTab = () => {
                             value={value}
                             placeholder="Sub"
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                let sub = e.target.value;
-                                setValue(sub);
+                                setValue(e.target.value);
                             }}
                         />
 
@@ -300,8 +298,8 @@ const CreateGameTab = () => {
                         onClick={() => {
                             if (key > -1 && value != "" && gameDetail?.nameId != undefined) {
                                 setGameDetail(prev => {
-                                    let newS = { ...prev };
-                                    if (newS.rules.filter((rule, index) => rule.Key == key).length == 0)
+                                    const newS = { ...prev };
+                                    if (newS.rules.filter((rule) => rule.Key == key).length == 0)
                                         newS.rules.push(
                                             { Key: key, Value: value }
                                         );

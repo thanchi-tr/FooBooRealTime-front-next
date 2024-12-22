@@ -5,7 +5,7 @@ import TextBox from "@/components/clients/Animation/TextBox";
 import { useLoadingContext } from "@/hooks/context/useLoadingContext";
 import useCountDown from "@/hooks/useCountDown";
 import useResultDisplayToggle from "@/hooks/useResultDisplayToggle";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { useSessionContext } from "@/hooks/context/useSessionContext";
 import { useSignalRContext } from "@/hooks/context/useSignalRContext";
@@ -36,12 +36,30 @@ const Game = () => {
         },
         [connection]
     )
+    useEffect(() => {
+        console.log("useEffect initialized");
+        const handleKeyDown = (event: KeyboardEvent) => {
+            console.log("Key Pressed:", event.key, "Shift:", event.shiftKey);
+            if (event.key.toLowerCase() === "tab" && event.shiftKey) {
+                console.log("Shortcut detected");
+                event.preventDefault();
+                OpenHandler();
+            }
+        };
+
+        window.addEventListener("keydown", handleKeyDown);
+
+        return () => {
+            console.log("useEffect cleanup");
+            window.removeEventListener("keydown", handleKeyDown);
+        };
+    }, [OpenHandler]);
     //replace with real loading task
     useEffect( // move to score display
         () => {
             if (timeRemain == 0) {
                 setTimeout(() => {
-                    router.push("../score/" + name)
+                    router.push("../score/")
                 }, 200)
             }
         }, [timeRemain]
