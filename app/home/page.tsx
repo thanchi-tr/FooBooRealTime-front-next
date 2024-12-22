@@ -25,7 +25,7 @@ const Home = () => {
                     `}>
                     {navs.map(
 
-                        (nav, index) => (
+                        (nav) => (
                             <Link
                                 key={`nav-${nav.name}`}
                                 className={`

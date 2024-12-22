@@ -12,8 +12,7 @@ const CreateNewSession = (
 ) => {
 
     const router = useRouter()
-    const { connect, isConnect, connection, invoke } = useSignalRContext();
-    const [sessions, setSessions] = useState<SessionT[]>([]);
+    const { connect, connection, invoke } = useSignalRContext();
     const [nameOptions, setNameOptions] = useState<string[]>([])
     const [isShowOption, setIsShowOption] = useState(false);
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1);
@@ -39,7 +38,6 @@ const CreateNewSession = (
     useEffect(
         () => {
             if (session != undefined) {
-                console.log(session)
                 router.push(`/waitroom/${session.sessionId}?isOpenRule=true`);
             }
         }, [session]

@@ -1,6 +1,5 @@
 'use client';
 import CountDownClock from "@/components/clients/Animation/CountDownClock";
-import LoadingScreen from "@/components/clients/Animation/LoadingScreen";
 import Rule from "@/components/clients/Animation/RuleDescriptionToggle";
 import TextBox from "@/components/clients/Animation/TextBox";
 import { useLoadingContext } from "@/hooks/context/useLoadingContext";
@@ -18,8 +17,8 @@ import { useSignalRContext } from "@/hooks/context/useSignalRContext";
  * 
  */
 const Game = () => {
-    const { name, rules, id, question, time, setQuestion, reset } = useSessionContext();
-    const { timeRemain, triggerStart } = useCountDown(10);
+    const { name, rules, question, time, setQuestion, reset } = useSessionContext();
+    const { timeRemain, triggerStart } = useCountDown(time * 60);
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(false, false);
     const { startLoading } = useLoadingContext();
     const { connect, invoke, connection } = useSignalRContext();
