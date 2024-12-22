@@ -1,7 +1,4 @@
 import CreateGameTab from "@/components/clients/Animation/CreateGameTab";
-import LoadingScreen from "@/components/clients/Animation/LoadingScreen";
-import ScoreScreen from "@/components/clients/Animation/ScoreScreen";
-import SessionPresentation from "@/components/clients/Animation/SessionPresentation";
 
 const Test = () => {
     return (<div

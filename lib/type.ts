@@ -11,6 +11,7 @@ export interface scoreT {
   IsReady: boolean;
   IsDisconnect: boolean;
 }
+
 export const SignalRServer = {
   JoinSession: "JoinSession",
   SendAnswer: "SendAnswer",

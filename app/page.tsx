@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 
 const Page = () => {
-  useRouter().push("/auth/login");
+  useRouter().push("/home");
 }
 
 export default Page;

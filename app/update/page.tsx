@@ -32,7 +32,8 @@ const UpdateGamesContext = () => {
                     "Content-Type": "application/json-patch+json",
                 },
             });
-            // console.log(await response.data)
+            console.log(await response.data)
+            setSelectedOptionIndex(-1);//reset
             setContexts(await response.data)
         } catch (error) {
             console.error("Error creating game:", error);
@@ -45,7 +46,7 @@ const UpdateGamesContext = () => {
 
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/${contexts[selectedOptionIndex].gameId.replaceAll(` `, `%20`)}`;
         try {
-            const response = await axios.delete(apiUrl, {
+            await axios.delete(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
                 },

@@ -39,6 +39,7 @@ const CreateNewSession = (
     useEffect(
         () => {
             if (session != undefined) {
+                console.log(session)
                 router.push(`/waitroom/${session.sessionId}?isOpenRule=true`);
             }
         }, [session]

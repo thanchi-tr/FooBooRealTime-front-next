@@ -11,7 +11,7 @@ const Home = () => {
     return (
         <div
             className={`
-                relative flex
+                relative flex overflow-clip
                 h-screen w-screen bg-background`}
         >
             <div className={`absolute flex mt-[24%] rotate-6

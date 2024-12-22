@@ -23,27 +23,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     const { connect, isConnect, connection, invoke } = useSignalRContext();
     const { isLoaded, startLoading, loadComplete } = useLoadingContext();
     const router = useRouter();
-    const playerReadyToggle = useCallback((index: number) => {
-        if (connection == null)
-            // console.log("Error occur when attempt to toggle player state");
-            true;
-        else {
-            invoke("TogglePlayerReady");
-        }
-        setPlayerState((prev) => {
 
-            // Create a shallow copy of the array
-            const updatedPlayers = [...prev];
-
-            // Create a shallow copy of the specific player object
-            updatedPlayers[index] = {
-                ...updatedPlayers[index],
-                isReady: !updatedPlayers[index].isReady, // Toggle the isReady property
-            };
-            // Return the updated array
-            return updatedPlayers;
-        });
-    }, [playerState]);
 
 
     // load the information in
@@ -55,15 +35,10 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     console.log("INITIAL QUESTION:" + initQuestion)
                     setQuestion(initQuestion);
                 });
+
                 connection.on("SupplySessionInfo", (
                     gameName: string,
                     rules_: Map<string, string>,
-                    playerDetails: {
-                        playerConnectionId: string,
-                        CorrectCount: number,
-                        isReady: boolean,
-                        isDisconnect: boolean
-                    }[]
                 ) => {
                     let sanitisedRules = Object.entries(rules_).map(([key, value]) => ({
                         Key: Number(key), // Ensure key is a number if necessary
@@ -100,7 +75,27 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             }
         }, [playerState]
     )
+    const playerReadyToggle = useCallback((index: number) => {
+        if (connection == null)
+            // console.log("Error occur when attempt to toggle player state");
+            true;
+        else {
+            invoke("TogglePlayerReady");
+        }
+        setPlayerState((prev) => {
 
+            // Create a shallow copy of the array
+            const updatedPlayers = [...prev];
+
+            // Create a shallow copy of the specific player object
+            updatedPlayers[index] = {
+                ...updatedPlayers[index],
+                isReady: !updatedPlayers[index].isReady, // Toggle the isReady property
+            };
+            // Return the updated array
+            return updatedPlayers;
+        });
+    }, [playerState]);
     const toLobyClickHandler = useCallback(
         () => {
             startLoading();

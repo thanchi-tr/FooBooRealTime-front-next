@@ -19,7 +19,7 @@ import { useSignalRContext } from "@/hooks/context/useSignalRContext";
  */
 const Game = () => {
     const { name, rules, id, question, time, setQuestion, reset } = useSessionContext();
-    const { timeRemain, triggerStart } = useCountDown(time * 60);
+    const { timeRemain, triggerStart } = useCountDown(10);
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(false, false);
     const { startLoading } = useLoadingContext();
     const { connect, invoke, connection } = useSignalRContext();
@@ -34,20 +34,14 @@ const Game = () => {
                 triggerStart();
                 connection.on("SupplyQuestion", (question) => setQuestion(question))
             }
-
         },
         [connection]
     )
-    // simulate question serving
-
     //replace with real loading task
-    // useEffect(() => { if (!isLoaded) simulateLoadTask() }, [isLoaded])
-
     useEffect( // move to score display
         () => {
             if (timeRemain == 0) {
                 setTimeout(() => {
-
                     router.push("../score/" + name)
                 }, 200)
             }
