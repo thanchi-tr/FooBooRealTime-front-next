@@ -17,7 +17,7 @@ import { useSignalRContext } from "@/hooks/context/useSignalRContext";
  * 
  */
 const Game = () => {
-    const { name, rules, question, time, setQuestion, reset } = useSessionContext();
+    const { rules, question, time, setQuestion, reset } = useSessionContext();
     const { timeRemain, triggerStart } = useCountDown(time * 60);
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(false, false);
     const { startLoading } = useLoadingContext();

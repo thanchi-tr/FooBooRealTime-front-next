@@ -1,6 +1,9 @@
-
+"use client"
+import Brand from '@/components/clients/Functional/UserNLogOut';
+import { useUser } from '@auth0/nextjs-auth0/client';
 import Link from 'next/link';
 const Home = () => {
+    const { user } = useUser();
     const navs: { name: string, url: string }[] = [
         { name: "Home", url: "/home" },
         { name: "Add", url: "/create-game" },
@@ -50,11 +53,11 @@ const Home = () => {
                 `}></div>
             <div
                 className={`
-                    absolute bottom-20 right-12 tracking-widest uppercase
-                    font-mainfont text-5xl text-white/20
+                    absolute 
+                    bottom-20 right-12 
                     `}
             >
-                June
+                <Brand></Brand>
             </div>
         </div>
     )

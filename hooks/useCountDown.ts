@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 
 const useCountDown = (initTime: number) => {
-  const [timeRemain, setTimeRemain] = useState<number>(initTime);
+  const [timeRemain, setTimeRemain] = useState<number>(60);
   const [isStart, setIsStart] = useState(false);
   const triggerStart = () => {
     setTimeRemain(initTime);
     setIsStart(true);
   };
+
+  useEffect(() => {
+    // validate the intial timeer
+    if (initTime > 0) setTimeRemain(initTime);
+  }, []);
+
   useEffect(() => {
     if (isStart) {
-      console.log("start countdowning");
       let timer = setInterval(
         () => setTimeRemain((prev) => (prev > 0 ? prev - 1 : prev)),
         1000

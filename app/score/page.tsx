@@ -58,16 +58,18 @@ const ScoreScreen = () => {
         }, [connection]
     )
 
-    return (<div
-        className={`
+    return (
+        <div className={`h-screen w-screen bg-foregroundShadow`}>
+            <div
+                className={`
             flex items-center justify-center
             h-full w-full bg-foregroundShadow/70`}
-    >
-        {/* central display */}
-        <div
-            className={`h-[50%] w-[60%] flex flex-col justify-evenly`}
-        >
-            <div className={`group
+            >
+                {/* central display */}
+                <div
+                    className={`h-[50%] w-[60%] flex flex-col justify-evenly`}
+                >
+                    <div className={`group
                 relative z-50
                 font-extrabold tracking-widest text-2xl
                 shadow-inner shadow-black
@@ -77,14 +79,14 @@ const ScoreScreen = () => {
                 border-4 border-transparent
                 group-hover:animate-pulse
                 p-[10%]`}
-                onClick={reTryHandler}
-            >
+                        onClick={reTryHandler}
+                    >
 
-                <p className={`relative group-hover:hidden z-50`}>{name}</p>
-                <p className={`opacity-0 group-hover:opacity-100 
+                        <p className={`relative group-hover:hidden z-50`}>{name}</p>
+                        <p className={`opacity-0 group-hover:opacity-100 
                     hidden group-hover:relative group-hover:block
                     transition-all duration-500 uppercase z-50`}>try Again</p>
-                <div className={`
+                        <div className={`
                             z-0
                             group-hover:animate-pulse
                             absolute top-0 left-0
@@ -94,7 +96,7 @@ const ScoreScreen = () => {
                             group-hover:from-foreground/20
                             via-foreground/0 to-pink/0 
                             `} />
-                <div className={`
+                        <div className={`
                             z-0
                             group-hover:animate-pulse
                             absolute top-0 left-0
@@ -105,7 +107,7 @@ const ScoreScreen = () => {
                             group-hover:from-foreground/40
                             via-foreground/0 to-pink/0 
                             `} />
-                <div className={`
+                        <div className={`
                             z-0
                             group-hover:animate-pulse
                             absolute top-0 left-0
@@ -116,62 +118,67 @@ const ScoreScreen = () => {
                             backdrop-blur-sm opacity-40
                             via-foreground/0 to-pink/0 
                             `} />
-            </div>
+                    </div>
 
-            <div
+                    <div
 
-                className={`flex flex-row w-full 
+                        className={`flex flex-row w-full 
                         justify-between
                         gap-4 pl-[10%]
                         text-xl uppercase font-mainfont
                         `}
-            >
+                    >
 
-                <div>
-                    <div
-                        className={`hover:cursor-pointer hover:animate-pulse hover:underline 
+                        <div>
+                            <div
+                                className={`hover:cursor-pointer hover:animate-pulse hover:underline 
                         text-textColour/60 text-start text-lg`}
-                        onClick={toHomeClickHandler}> Home</div>
-                    <div
-                        className={`hover:cursor-pointer hover:animate-pulse hover:underline 
+                                onClick={toHomeClickHandler}> Home</div>
+                            <div
+                                className={`hover:cursor-pointer hover:animate-pulse hover:underline 
                         text-textColour/60 text-start text-lg`}
-                        onClick={toLobyClickHandler}> Loby</div>
-                </div>
+                                onClick={toLobyClickHandler}> Loby</div>
+                        </div>
 
-                <div className={` text-sm `}> Correct</div>
-            </div>
-            {playerScores.map(
-                (score, i) => (<div
-                    key={`score-${i}`}
-                    className={`flex flex-row w-full 
-                        justify-between 
+                        <div className={` text-sm `}> Correct</div>
+                    </div>
+                    {playerScores.map(
+                        (score, i) => (<div
+                            key={`score-${i}`}
+                            className={`flex flex-row w-full pr-[5%]
+                        justify-between rounded-sm
                         gap-4 pl-[10%] 
+                         ${i == 0 ? "bg-foreground/30" : ""}
+                        ${i == 1 ? "bg-white/45" : ""}
+                        ${i == 2 ? "bg-red-600/30" : ""}
                         text-xl uppercase font-mainfont
                         `}
-                >
-                    <div className={`
+                        >
+                            <div className={`
                          h-auto w-auto aspect-square flex items-center justify-center
                          rounded-md font-bold
                          px-1 text-textColour
                         ${i == 0 ? "bg-foreground" : ""}
                         ${i == 1 ? "bg-white/95" : ""}
-                        ${i == 2 ? "bg-red-600/40" : ""}
+                        ${i == 2 ? "bg-red-700/80" : ""}
                         `}> {(i + 1)}</div>
-                    <div className={`
-                        ${i == 0 ? "text-foreground" : ""}
-                         ${i == 1 ? "text-white/95" : ""}
-                         ${i == 2 ? "text-red-500/80" : "text-textColour"}
+                            <div className={`
+                        ${i == 0 ? "text-white/85" : ""}
+                         ${i == 1 ? "text-black/85" : ""}
+                         ${i == 2 ? "text-white/75" : "text-textColour"}
                         `}> {score.playerName}</div>
-                    <div className={`
-                        ${i == 0 ? "text-foreground" : ""}
-                        ${i == 1 ? "text-white/95" : ""}
-                         ${i == 2 ? "text-red-500/80" : "text-textColour"}
+                            <div className={`
+                        ${i == 0 ? "text-white/85" : ""}
+                        ${i == 1 ? "text-black/85" : ""}
+                         ${i == 2 ? "text-white/75" : "text-textColour"}
                         `}> {score.count}</div>
-                </div>)
-            )}
-        </div>
+                        </div>)
+                    )}
+                </div>
 
-    </div >)
+            </div >
+        </div>
+    )
 }
 
 export default ScoreScreen;
