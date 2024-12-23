@@ -10,30 +10,46 @@ import { useSessionContext } from "@/hooks/context/useSessionContext";
 import { useLoadingContext } from "@/hooks/context/useLoadingContext";
 import LoadingScreen from "../Animation/LoadingScreen";
 import { useSearchParams } from 'next/navigation';
+import { useUser } from "@auth0/nextjs-auth0/client";
+
+
+
 const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     const searchParams = useSearchParams();
     const [playerState, setPlayerState] = useState([
         { name: "june", isReady: false },
     ])
+    const { user } = useUser();
     const [isAdjustTime, setIsAdjustTime] = useState(false);
-    const { name, rules, id, setName, setRules, setId, setQuestion, time, setTime } = useSessionContext();
+    const { name, rules, setName, setRules, setId, setQuestion, time, setTime } = useSessionContext();
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(!(searchParams.get("isOpenRule") == "false"), !(searchParams.get("isOpenRule") == "false"));
     const { connect, connection, invoke } = useSignalRContext();
     const { isLoaded, startLoading, loadComplete } = useLoadingContext();
+    // const [participantCount, _] = useState(1);
     const router = useRouter();
-
-
 
     // load the information in
     useEffect(
         () => {
             if (connection != null) {
-                console.log("June join session " + id)
                 connection.on("SupplyInitQuestion", (initQuestion: number) => {
-                    console.log("INITIAL QUESTION:" + initQuestion)
                     setQuestion(initQuestion);
+                    console.log("All player ready: About to start")
+                    router.push("../game")
                 });
+                // connection.on("SupplyScoreBoard", (scoreBoard: scoreT[]) => {
+                //     const _playerScores = scoreBoard.map(({ isReady }: scoreT) => {
 
+                //         // You can now use these variables to transform the object
+                //         return {
+                //             name: /*playerConnectionId*/ "June",
+                //             IsReady: isReady
+                //         };
+                //     });
+
+                //     console.log(_playerScores);
+                //     setParticipantCount(_playerScores.length);
+                // })
                 connection.on("SupplySessionInfo", (
                     gameName: string,
                     rules_: Map<string, string>,
@@ -46,7 +62,6 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     setRules(sanitisedRules);
                     loadComplete();
                 })
-
                 setId(sessionId);
                 invoke("JoinSession", sessionId);
                 setTime(1);
@@ -57,25 +72,9 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             }
         }, [connection]
     );
-    // Handle loading next phase
-    useEffect(
-        () => {
-            if (playerState.reduce(
-                (predicate, player) => predicate && player.isReady,
-                true // Initial value for predicate
-            )) {
-                // All players are ready
-                // console.log("All player ready")
-                setTimeout(() =>
 
-                    router.push("../game"), 550
-                )
-            }
-        }, [playerState]
-    )
     const playerReadyToggle = useCallback((index: number) => {
         if (connection != null) {
-
             invoke("TogglePlayerReady");
         }
         setPlayerState((prev) => {
@@ -104,11 +103,11 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         () => {
             startLoading();
             invoke("LeftSession");
-            router.push("/home")
+            router.push("/")
         }
         , []
     );
-    return (<div
+    return (<><div
         className={`relative flex flex-row flex-grow justify-evenly
             items-center h-screen w-screen bg-background
             overflow-clip
@@ -145,8 +144,8 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             </div>
             {playerState.map(
                 (player, i) =>
-                    <div key={`player-${player.name}-${i}`} className={`w-[90%]`}>
-                        <IluminatedBox text={player.name} isSelect={player.isReady} clickHandler={() => playerReadyToggle(i)}></IluminatedBox>
+                    <div key={`player-${user?.name ?? `${i}`}-${i}`} className={`w-[90%]`}>
+                        <IluminatedBox text={user?.name?.split(" ")[0] ?? ""} isSelect={player.isReady} clickHandler={() => playerReadyToggle(i)}></IluminatedBox>
                     </div>
             )}
         </div>
@@ -247,7 +246,13 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         </form>
 
 
-    </div>)
+    </div>
+        <div
+            className={`absolute bottom-0 right-0 font-mainfont text-sm scale-90 text-black/70 tracking-tighter`}
+        >
+            player:<p className="pl-2 inline text-md text-yellow-400">{playerState.length}</p> over <p className="inline text-white/80">{playerState.length}</p>
+        </div>
+    </>)
 }
 
 export default WaitRoomPage;

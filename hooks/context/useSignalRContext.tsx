@@ -5,6 +5,7 @@ import { SessionT, SignalRServer } from "@/lib/type";
 import { HubConnection, HubConnectionBuilder } from "@microsoft/signalr";
 import { createContext, useContext, ReactNode, useState, useEffect, useCallback } from "react";
 
+
 interface SignalRContext {
     isConnect: boolean;
     connect: () => Promise<void>;
@@ -50,6 +51,7 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
             console.warn("Already connected to SignalR.");
             return;
         }
+
         const conn = CreateSignalRConnection("https://localhost:5001/hub/game");
         conn.onclose((error) => {
             setIsConnected(false);

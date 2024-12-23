@@ -36,7 +36,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${codaCaption.variable} ${geistSans.variable} ${geistMono.variable} antialiased`}
+        className={`${codaCaption.variable} ${geistSans.variable} ${geistMono.variable} antialiased overflow-clip`}
       >
         <UserProvider>
           <SignalRProvider>

@@ -16,7 +16,7 @@ const UpdateGamesContext = () => {
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1);
     const router = useRouter();
     const toHomeClickHandler = useCallback(
-        () => { router.push("/home") }
+        () => { router.push("/") }
         , []
     );
     const GetGamesContext = async () => {
@@ -29,7 +29,6 @@ const UpdateGamesContext = () => {
                     "Content-Type": "application/json-patch+json",
                 },
             });
-            console.log(await response.data)
             setSelectedOptionIndex(-1);//reset
             setContexts(await response.data)
         } catch (error) {
@@ -79,7 +78,7 @@ const UpdateGamesContext = () => {
                 `} >
             <div className={`group z-50
                     flex flex-row justify-between rounded-xl border-2 text-center border-black/20
-                    absolute w-[20%] h-auto top-[2vw] left-[2vw] font-mainfont text-black/90 uppercase tracking-tighter
+                    absolute w-[20%] h-auto top-[2vw] left-[22vw] font-mainfont text-black/90 uppercase tracking-tighter
                     hover:cursor-pointer  bg-foreground/80 hover:text-white/80
                     `}>
                 <div
@@ -121,7 +120,50 @@ const UpdateGamesContext = () => {
                             group-hover:animate-pulse
                             `} /> Home</div>
             </div>
-
+            <div className={`group z-50
+                    flex flex-row justify-between rounded-xl border-2 text-center border-black/20
+                    absolute w-[20%] h-auto top-[2vw] left-[50vw] font-mainfont text-black/90 uppercase tracking-tighter
+                    hover:cursor-pointer  bg-foreground/80 hover:text-white/80
+                    `}>
+                <div
+                    className={`text-center h-full w-full`}
+                    onClick={toHomeClickHandler}><div className={`
+                            absolute  left-0
+                            h-full w-full 
+                            rounded-full scale-y-110 scale-x-[130%]
+                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                            group-hover:from-foreground/40
+                            via-foreground/0 to-pink/0 
+                            group-hover:animate-pulse
+                            `} />
+                    <div className={`
+                            absolute top-[20%] left-0
+                            h-full w-full 
+                            rounded-full scale-y-90 scale-x-[140%]
+                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                            group-hover:from-foreground/20
+                            via-foreground/0 to-pink/0 
+                            group-hover:animate-pulse
+                            `} />
+                    <div className={`
+                            absolute top-[20%] left-0
+                            h-full w-full 
+                            rounded-full scale-y-125 scale-x-[175%]
+                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                            group-hover:from-foreground/10
+                            via-foreground/0 to-pink/0 
+                            group-hover:animate-pulse
+                            `} />
+                    <div className={`
+                            absolute top-[20%] left-0
+                            h-full w-full 
+                            rounded-full scale-y-[200%] scale-x-[185%]
+                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                            group-hover:from-foreground5
+                            via-foreground/0 to-pink/0 
+                            group-hover:animate-pulse
+                            `} /> Logout</div>
+            </div>
 
 
         </div >

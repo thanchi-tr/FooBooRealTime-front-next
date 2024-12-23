@@ -1,7 +1,7 @@
 'use client';
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 interface gameConfig {
     nameId: string,
@@ -13,6 +13,7 @@ const CreateGameTab = () => {
     const [key, setKey] = useState(1);
     const [range, setRange] = useState(100);
     const [value, setValue] = useState("Subs");
+
     const [gameDetail, setGameDetail] = useState<gameConfig>({
         nameId: "",
         rules: [
@@ -20,10 +21,19 @@ const CreateGameTab = () => {
         ]
     })
     const toHomeClickHandler = useCallback(
-        () => { router.push("/home") }
+        () => { router.push("/") }
         , []
     );
+    const logOutClickHandler = useCallback(
+        () => { router.push("/api/auth/logout") }
+        , []
+    );
+    useEffect(
+        () => {
 
+        }
+        , []
+    )
     const GameCreationHandler = async () => {
         if (gameDetail.nameId == "")
             return; // name is the key, uniqure and required
@@ -67,9 +77,10 @@ const CreateGameTab = () => {
                     flex  items-center 
                     border-r-[3px] border-black/40
                 `} >
+
                 <div className={`group z-50
                     flex flex-row justify-between rounded-xl border-2 text-center border-black/20
-                    absolute w-[20%] h-auto top-[2vw] left-[2vw] font-mainfont text-black/90 uppercase tracking-tighter
+                    absolute w-auto px-2 h-auto top-[3vw] left-[4vw] font-mainfont text-black/90 uppercase tracking-tighter
                     hover:cursor-pointer  bg-foreground/80 hover:text-white/80
                     `}>
                     <div
@@ -110,6 +121,50 @@ const CreateGameTab = () => {
                             via-foreground/0 to-pink/0 
                             group-hover:animate-pulse
                             `} /> Home</div>
+                </div>
+                <div className={`group z-50
+                    flex flex-row justify-between rounded-xl border-2 text-center border-black/20
+                    absolute w-auto px-2 h-auto top-[3vw] left-[24vw] font-mainfont text-black/90 uppercase tracking-tighter
+                    hover:cursor-pointer  bg-foreground/80 hover:text-white/80
+                    `}>
+                    <div
+                        className={`text-center h-full w-full`}
+                        onClick={logOutClickHandler}><div className={`
+                            absolute  left-0
+                            h-full w-full 
+                            rounded-full scale-y-110 scale-x-[130%]
+                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                            group-hover:from-foreground/40
+                            via-foreground/0 to-pink/0 
+                            group-hover:animate-pulse
+                            `} />
+                        <div className={`
+                            absolute top-[20%] left-0
+                            h-full w-full 
+                            rounded-full scale-y-90 scale-x-[140%]
+                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                            group-hover:from-foreground/20
+                            via-foreground/0 to-pink/0 
+                            group-hover:animate-pulse
+                            `} />
+                        <div className={`
+                            absolute top-[20%] left-0
+                            h-full w-full 
+                            rounded-full scale-y-125 scale-x-[175%]
+                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                            group-hover:from-foreground/10
+                            via-foreground/0 to-pink/0 
+                            group-hover:animate-pulse
+                            `} />
+                        <div className={`
+                            absolute top-[20%] left-0
+                            h-full w-full 
+                            rounded-full scale-y-[200%] scale-x-[185%]
+                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                            group-hover:from-foreground5
+                            via-foreground/0 to-pink/0 
+                            group-hover:animate-pulse
+                            `} /> Logout</div>
                 </div>
                 <form className={`
                     w-full gap-4 

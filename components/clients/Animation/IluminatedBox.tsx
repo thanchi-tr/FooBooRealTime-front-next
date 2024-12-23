@@ -5,7 +5,7 @@ interface boxConfig {
     isSelect: boolean,
     clickHandler: () => void // task that this button suppose to do
 }
-const IluminatedBox = ({ text, isSelect, clickHandler }: boxConfig) => {
+const IluminatedBox = ({ text = "", isSelect, clickHandler }: boxConfig) => {
     // const [isSelect, setIsSelect] = useState(false);
     return (<div
         className={`

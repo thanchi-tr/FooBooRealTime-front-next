@@ -6,8 +6,8 @@ export interface SessionT {
 export interface scoreT {
   playerConnectionId: string;
   correctCount: number;
-  IsReady: boolean;
-  IsDisconnect: boolean;
+  isReady: boolean;
+  isDisconnect: boolean;
 }
 
 export const SignalRServer = {

@@ -21,7 +21,7 @@ const ScoreScreen = () => {
         () => {
             startLoading();
             invoke("LeftSession");
-            router.push("/home")
+            router.push("/")
         }
         , []
     );
@@ -42,7 +42,6 @@ const ScoreScreen = () => {
                 connect();
             } else {
                 connection.on("SupplyScoreBoard", (scoreBoard: scoreT[]) => {
-                    console.log(scoreBoard);
                     const _playerScores = scoreBoard.map(({ correctCount }: scoreT) => {
                         // You can now use these variables to transform the object
                         return {
@@ -50,7 +49,6 @@ const ScoreScreen = () => {
                             count: correctCount,
                         };
                     });
-                    console.log(_playerScores)
                     setPlayerScores(sanitisedScores(_playerScores));
                 });
                 invoke("RequestScoreBoard")
@@ -78,7 +76,8 @@ const ScoreScreen = () => {
                 hover:shadow-xl hover:bg-foreground/80
                 border-4 border-transparent
                 group-hover:animate-pulse
-                p-[10%]`}
+                p-2 
+                `}
                         onClick={reTryHandler}
                     >
 

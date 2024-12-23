@@ -1,32 +1,37 @@
 'use client';
 
 import { useUser } from "@auth0/nextjs-auth0/client";
+import Link from "next/link";
 
 const Brand = () => {
     const { user } = useUser();
+    if (!user) {
+        return (
+            <div className="tracking-widest uppercase font-mainfont text-3xl text-white/20">
+                Welcome, Guest
+            </div>
+        );
+    }
     return <div
         className={`
          tracking-widest uppercase
         font-mainfont text-3xl text-white/20
         `}
     >
-        {user
-            &&
+        {
             <div
                 className={`
             pt-[5%] 
             text-lg text-black/40 tracking-normal
             hover:text-foreground/60
             hover:underline hover:animate-pulse`}>
-                <a href="/api/auth/logout">logout</a>
+                <Link href="/api/auth/logout">logout</Link>
 
             </div>
         }
-        {user
-            &&
-            (user.name?.split(" ")
-                .map(
-                    (word, i) => <p key={`name-${i}`}> {word}</p>))}
+        {(user.name?.split(" ")
+            .map(
+                (word, i) => <p key={`name-${i}`}> {word}</p>))}
 
     </div>
 }

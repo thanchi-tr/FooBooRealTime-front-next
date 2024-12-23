@@ -37,11 +37,8 @@ const Game = () => {
         [connection]
     )
     useEffect(() => {
-        console.log("useEffect initialized");
         const handleKeyDown = (event: KeyboardEvent) => {
-            console.log("Key Pressed:", event.key, "Shift:", event.shiftKey);
             if (event.key.toLowerCase() === "tab" && event.shiftKey) {
-                console.log("Shortcut detected");
                 event.preventDefault();
                 OpenHandler();
             }
@@ -50,7 +47,6 @@ const Game = () => {
         window.addEventListener("keydown", handleKeyDown);
 
         return () => {
-            console.log("useEffect cleanup");
             window.removeEventListener("keydown", handleKeyDown);
         };
     }, [OpenHandler]);
@@ -80,7 +76,8 @@ const Game = () => {
         <div
             className={`
                 relative
-            flex flex-col flex-grow justify-evenly
+            flex flex-col lg:flex-row   
+            flex-grow justify-evenly
             items-center h-screen w-screen 
             bg-background
             `}
@@ -92,24 +89,25 @@ const Game = () => {
 
             <div className={`
             absolute 
-            w-[60vw] h-[95vh] 
+            w-[55vw] sm:w-[62vw] md:w-[50vw] xl:w-[54vw]
+            h-[95vh] 
             -top-[5vh] z-0
             ${isRuleOpen ? "z-50 " : " "}`}>
                 <Rule isRuleOpen={isRuleOpen} rules={rules} openHandler={OpenHandler} size={0} isHiding={true}></Rule>
             </div>
             <div className={`
                 group absolute hover:cursor-pointer
-                -top-[6%] -left-[6%] 
+                -top-[6%] -left-[6%]  md:-top-[2%] md:-left-[4%] lg:-left-[3.5%]
                 h-[18%] aspect-square
                 `}
                 onClick={toLobyClickHandler}
             >
                 <div className={`-z-10
-                group-hover:z-10 group-hover:delay-200 rotate-[32deg]
+                group-hover:z-10 group-hover:delay-200 rotate-[32deg] lg:rotate-[22deg]
                 duration-100 
-                absolute text-2xl top-[60%] group-hover:top-[90%] -right-[10%] group-hover:-right-[8%]
+                absolute text-2xl top-[60%] group-hover:top-[90%] lg:group-hover:top-[75%] -right-[10%] group-hover:-right-[8%]
                 ${(timeRemain != 0
-                        ? "bg-gradient-to-tl from-foreground/80 via-foreground/40 to-foregroundShadow/40 text-transparent bg-clip-text"
+                        ? "bg-gradient-to-tl from-foreground/80 via-foreground/40 to-foregroundShadow/40 md:to-foregroundShadow/5 text-transparent bg-clip-text"
                         : "text-textColour/35")}
                 uppercase font-extrabold  text-3xl
                 `}>
@@ -129,7 +127,7 @@ const Game = () => {
                 >
                     <div className={`relative h-full w-full`}>
                         <div className={`
-                    absolute -bottom-[30%] -right-[20%]
+                    absolute -bottom-[30%] -right-[20%] lg:-right-[28%] lg:-bottom-[20%] lg:scale-125   
                     h-full w-full 
                     rounded-full scale-x-110  
                     transition-all duration-500 ease-out
@@ -154,23 +152,34 @@ const Game = () => {
 
             </div>
 
-            <div className={`relative`}>
+            <div className={`relative 
+                
+                `}>
 
                 <div className={`absolute scale-[200%]
-                    flex flex-row gap-2
+                    lg:left-[35vw] xl:left-[31vw] 2xl:left-[26vw]
+                     lg:top-[10vw] xl:top-[8.5vw]
+                    flex flex-row gap-2 lg:bg-background
                     shadow-inner   p-2 
                     ${(timeRemain != 0
                         ? " bg-gradient-to-t from-background via-foregroundShadow/25 to-foreground/15 shadow-black"
                         : "from-black/30 shadow-black/55")}
             
-            text-textColour/50 text-2xl 
+            text-textColour/50 text-2xl md:text-xl lg:text-md 
             uppercase font-extrabold font-mainfont`} >{question} <p className={`text-lg text-black/40`}>?</p></div>
             </div>
-            <div className={`relative h-[35vw] w-auto aspect-square`}>
+            <div className={`
+                relative lg:-z-0
+                h-[35vw] max-h-[270px] xl:max-h-[300px]
+                w-auto aspect-square`}>
                 <CountDownClock timeRemain={timeRemain}></CountDownClock>
             </div>
             <div
-                className={`w-1/2 h-auto z-10
+                className={`
+                    w-1/2 
+                    lg:w-1/3 lg:ml-[10%]
+                     2xl:w-[28%] 2xl:ml-[7%]
+                    h-auto z-10
                 
                 `}
             >

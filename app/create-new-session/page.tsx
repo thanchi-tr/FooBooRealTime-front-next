@@ -25,7 +25,6 @@ const CreateNewSession = (
                 connect();
             } else {
                 connection.on("SupplyGameContexts", (context: string[]) => {
-                    console.log(context);
                     setNameOptions(context);
                 });
 
@@ -46,7 +45,6 @@ const CreateNewSession = (
     const handleCreation = () => {
         if (selectedOptionIndex >= 0) {
             connection?.on("SupplySession", (session: SessionT) => {
-                console.log(session);
                 setSession(session);
             })
             invoke("RequestNewSession", nameOptions[selectedOptionIndex]);
@@ -69,8 +67,8 @@ const CreateNewSession = (
                     `}
             >
                 <div className={`flex gap-1
-                        justify-between
-                        h-[6vw] w-[52%]`}>
+                        justify-between md:-translate-x-[5%]
+                        h-[6vw] w-[52%] md:w-[48%] lg:w-[40%] xl:w-[35%] `}>
                     <Link
                         className={`hover:cursor-pointer hover:animate-pulse hover:underline text-foregroundShadow/90 font-mainfont`}
                         href={"./loby"}>{"<Back"}</Link>
@@ -78,21 +76,22 @@ const CreateNewSession = (
                         className={`
                             uppercase
                             hover:cursor-pointer hover:animate-pulse hover:underline text-foregroundShadow/90 font-mainfont`}
-                        href={"./home"}> home</Link>
+                        href={"./"}> home</Link>
                 </div>
 
 
                 <div
                     className={`
                         flex gap-1
-                        
-                        h-[6vw] w-[52%]
+                        w-[52%] md:w-[48%] lg:w-[40%] xl:w-[38%]
+                        h-[6vw]  md:h-[4vw] lg:h-[3vw] xl:h-[2.2vw] 2xl:h-[2vw]
                     `}
                 >
                     <div
                         className={`
                             relative
-                            h-[6vw] aspect-square
+                            h-[6vw] md:h-[4vw] lg:h-[3vw] xl:h-[2.2vw] 2xl:h-[2vw]
+                            aspect-square
                             rounded-md text-center text-textColour
                             hover:cursor-pointer hover:border-black/80 border-2 border-transparent
                             bg-foreground `}
@@ -145,7 +144,6 @@ const CreateNewSession = (
                                         `}
 
                                         onClick={() => {
-                                            console.log(index)
                                             setSelectedOptionIndex(prev => (prev != index) ? index : -1);
                                         }}
                                     >{name}</div>
@@ -165,7 +163,9 @@ const CreateNewSession = (
                 <div
                     className={`
                         overflow-clip group
-                        w-[38%] h-auto box-border
+                        md:-translate-x-[5%] lg:-translate-x-[8%] 2xl:-translate-x-[9%]
+                        w-[38%] md:w-[34%] lg:w-[28%] xl:w-[24%]
+                        h-auto box-border
                          rounded-md  
                          shadow-black
                         uppercase hover:border-foreground border-2 border-transparent
