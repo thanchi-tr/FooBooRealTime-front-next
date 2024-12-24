@@ -32,6 +32,9 @@ const Game = () => {
             } else {
                 triggerStart();
                 connection.on("SupplyQuestion", (question) => setQuestion(question))
+                connection.on("notifyGameEnd", () => {
+                    router.push("../score/")
+                })
             }
         },
         [connection]
@@ -55,7 +58,8 @@ const Game = () => {
         () => {
             if (timeRemain == 0) {
                 setTimeout(() => {
-                    router.push("../score/")
+                    console.log("timer is up")
+                    // router.push("../score/")
                 }, 200)
             }
         }, [timeRemain]

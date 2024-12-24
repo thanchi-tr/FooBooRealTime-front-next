@@ -22,16 +22,21 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     const { user } = useUser();
     const [isAdjustTime, setIsAdjustTime] = useState(false);
     const { name, rules, setName, setRules, setId, setQuestion, time, setTime } = useSessionContext();
+    const [temporarilyAdjTime, setTemporarilyAdjTime] = useState(time);
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(!(searchParams.get("isOpenRule") == "false"), !(searchParams.get("isOpenRule") == "false"));
     const { connect, connection, invoke } = useSignalRContext();
     const { isLoaded, startLoading, loadComplete } = useLoadingContext();
     // const [participantCount, _] = useState(1);
     const router = useRouter();
 
+
     // load the information in
     useEffect(
         () => {
             if (connection != null) {
+                connection.on("SupplyGameTime", (gameTime: number) => {
+                    setTime(gameTime);
+                });
                 connection.on("SupplyInitQuestion", (initQuestion: number) => {
                     setQuestion(initQuestion);
                     console.log("All player ready: About to start")
@@ -91,6 +96,13 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             return updatedPlayers;
         });
     }, [playerState]);
+
+    useEffect(
+        () => {
+            setTemporarilyAdjTime(time);
+        }, [time]
+    )
+
     const toLobyClickHandler = useCallback(
         () => {
             startLoading();
@@ -107,6 +119,14 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         }
         , []
     );
+    const ToggleSetTime = useCallback(() => {
+        if (temporarilyAdjTime != time) // out of synce
+        {
+            console.log(temporarilyAdjTime)
+            invoke("SupplyGameTime", temporarilyAdjTime);
+        }
+        setIsAdjustTime(prev => !prev)
+    }, [temporarilyAdjTime])
     return (<><div
         className={`relative flex flex-row flex-grow justify-evenly
             items-center h-screen w-screen bg-background
@@ -192,7 +212,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             <div className={
                 `relative
                 bg-foreground/70 rounded-3xl hover:bg-foreground hover:cursor-pointer hover:text-white text-black px-2 `}
-                onClick={() => setIsAdjustTime(prev => !prev)}
+                onClick={ToggleSetTime}
             >{time} {time < 2 ? "minute " : "minutes"}
 
 
@@ -210,7 +230,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             `}
             onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
                 event.preventDefault(); // Prevent the default form submission behavior
-                setIsAdjustTime((prev) => !prev);
+                ToggleSetTime();
             }}
         >
             <label
@@ -219,23 +239,23 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     uppercase font-mainfont font-extrabold  
                     bg-foreground/80
                     shadow-inner shadow-black`}
-                onClick={() => setIsAdjustTime(prev => !prev)}
+                onClick={ToggleSetTime}
             > set game time</label>
             <div
                 className="absolute top-0 h-full w-full z-0
                 hover:cursor-pointer
                 "
-                onClick={() => setIsAdjustTime(prev => !prev)}
+                onClick={ToggleSetTime}
             ></div>
             <input
                 type="number"
                 spellCheck="false"
-                value={time}
+                value={temporarilyAdjTime}
                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
                     let potentialTime = Number(e.target.value);
-                    potentialTime = potentialTime < 0 ? 0 : potentialTime;
-                    setTime(potentialTime);
-                    invoke("SupplyGameTime", potentialTime);
+                    potentialTime = potentialTime < 1 ? 1 : potentialTime;
+                    setTemporarilyAdjTime(potentialTime);
+
                 }} // Update state on input change
                 placeholder="Enter your answer"
                 className={`box-border z-50
