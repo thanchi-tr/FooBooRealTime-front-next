@@ -82,7 +82,7 @@ My application is a
 
 # UI sample (Mobile):
 
-<div
+<figure
     style="{display:flex; flex-direction:row, flex-wrap:wrap}"
 >
     <img src="./public/home.png"
@@ -105,4 +105,4 @@ My application is a
          alt="Home Page"
          width="210px"
          >
-</div>
+</figure>
