@@ -8,7 +8,7 @@ My application is a
 
 > **Real Time⏱⏱⏱ ⒻⓘⓏⓏⒷⓤⓏⓏ text-based Game 🎮🎮🎮** >
 
-<img src="./public/login.png"
+<img src="./public/Login.png"
          alt="Home Page"
          width="400px"
          >
