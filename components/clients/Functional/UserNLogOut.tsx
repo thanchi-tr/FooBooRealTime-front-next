@@ -7,8 +7,11 @@ const Brand = () => {
     const { user } = useUser();
     if (!user) {
         return (
-            <div className="tracking-widest uppercase font-mainfont text-3xl text-white/20">
-                Welcome, Guest
+            <div className="tracking-widest uppercase font-mainfont text-3xl text-white/40 scale-y-110">
+                <p className="
+                    tracking-tighter scale-y-[70%]
+                    text-black/35
+                "> Welcome</p> Guest
             </div>
         );
     }

@@ -40,7 +40,7 @@ const Home = () => {
                                   hover:text-white
                                 hover:bg-foreground border-[0.05px] hover:border-background/80 border-white/0
                                 text-center text-black/80 text-sm
-                                transition-all duration-700 ease-in-out
+                                transition-all duration-200 ease-in-out
                                 `} href={nav.url}                            >
                                 {nav.name}
                             </Link>

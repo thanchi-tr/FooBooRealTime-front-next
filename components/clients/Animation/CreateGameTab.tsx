@@ -1,7 +1,7 @@
 'use client';
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 
 interface gameConfig {
     nameId: string,
@@ -11,8 +11,8 @@ interface gameConfig {
 const CreateGameTab = () => {
     const router = useRouter();
     const [key, setKey] = useState(1);
-    const [range, setRange] = useState(100);
-    const [value, setValue] = useState("Subs");
+    const [range, setRange] = useState(10);
+    const [value, setValue] = useState("");
 
     const [gameDetail, setGameDetail] = useState<gameConfig>({
         nameId: "",
@@ -28,12 +28,6 @@ const CreateGameTab = () => {
         () => { router.push("/api/auth/logout") }
         , []
     );
-    useEffect(
-        () => {
-
-        }
-        , []
-    )
     const GameCreationHandler = async () => {
         if (gameDetail.nameId == "")
             return; // name is the key, uniqure and required
@@ -48,10 +42,8 @@ const CreateGameTab = () => {
                 },
             });
             if (accessKey.status != 200) {
-                console.error("Error to retrieve Access key");
-
+                console.error("Unauthorized action: Error to retrieve Access key");
             }
-            console.log(accessKey)
             const gameData = {
                 authorId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
                 gameId: gameDetail.nameId,
@@ -60,7 +52,7 @@ const CreateGameTab = () => {
                     RuleList: gameDetail.rules,
                 }),
             };
-
+            console.log(gameData);
             const response = await axios.post(apiUrl, gameData, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
@@ -68,7 +60,7 @@ const CreateGameTab = () => {
                 },
             });
             if (response.status == 201) {
-                router.push("/create-new-session");
+                router.push("/home");
             }
         } catch (error) {
             console.error("Error creating game:", error);
@@ -90,6 +82,7 @@ const CreateGameTab = () => {
                 `} >
 
                 <div className={`group z-50
+                    
                     flex flex-row justify-between rounded-xl border-2 text-center border-black/20
                     absolute w-auto px-2 h-auto top-[3vw] left-[4vw] font-mainfont text-black/90 uppercase tracking-tighter
                     hover:cursor-pointer  bg-foreground/80 hover:text-white/80
@@ -134,8 +127,9 @@ const CreateGameTab = () => {
                             `} /> Home</div>
                 </div>
                 <div className={`group z-50
+                    left-[24vw] md:left-[16vw] lg:left-[13vw] xl:left-[11.5vw]
                     flex flex-row justify-between rounded-xl border-2 text-center border-black/20
-                    absolute w-auto px-2 h-auto top-[3vw] left-[24vw] font-mainfont text-black/90 uppercase tracking-tighter
+                    absolute w-auto px-2 h-auto top-[3vw]  font-mainfont text-black/90 uppercase tracking-tighter
                     hover:cursor-pointer  bg-foreground/80 hover:text-white/80
                     `}>
                     <div
@@ -178,7 +172,9 @@ const CreateGameTab = () => {
                             `} /> Logout</div>
                 </div>
                 <form className={`
-                    w-full gap-4 
+                    md:ml-[25%] lg:ml-[20%] xl:ml-[20%]
+                    w-full md:w-[85%] lg:w-[80%] xl:w-[60%] 2xl:w-1/2
+                    gap-4 
                     flex flex-col items-center
                 `}>
                     <div className={`flex justify-between w-[95%]`}>
@@ -257,14 +253,16 @@ const CreateGameTab = () => {
             </div>
 
             <div className={`
-                flex flex-col
+                flex flex-col items-center
                text-white/65
                 
                 w-1/2 h-screen bg-black/20
                 shadow-inner shadow-black
                 `}>
 
-                <div className={`w-full
+                <div className={`
+                    
+                    w-full md:w-3/4 lg:w-[60%] xl:w-[50%] 2xl:w-[36%]
                     text-sm items-center
                     bg-foreground/60 
                     flex flex-col justify-between shrink-0 grow-0`}>
@@ -311,7 +309,9 @@ const CreateGameTab = () => {
 
                 </div>
 
-                <div className={`h-[15vh] w-full flex flex-col bg-fadedforeground
+                <div className={`h-[15vh] md:h-[20vh] lg:h-[25vh] xl:h-[13vh]
+                    w-full md:w-3/4 lg:w-[60%] xl:w-[50%] 2xl:w-[36%]
+                    flex flex-col bg-fadedforeground
                                     shadow-2xl shadow-black/80
                                     rounded-b-3xl
                     `}>
@@ -335,9 +335,10 @@ const CreateGameTab = () => {
                             value={(key > -1) ? key : 1}
                             placeholder="Key"
                             onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                                let potentialTime = Number(e.target.value);
-                                potentialTime = potentialTime < 0 ? 0 : potentialTime;
-                                setKey(potentialTime);
+                                let potentialKey = Number(e.target.value);
+
+                                potentialKey = potentialKey < 0 ? 0 : potentialKey;
+                                setKey(potentialKey);
                             }}
                         />
                         <input className="relative  w-[50%] h-auto py-1
@@ -362,7 +363,12 @@ const CreateGameTab = () => {
                         text-xl self-center p-2 
                         w-auto hover:cursor-pointer`}
                         onClick={() => {
-                            if (key > -1 && value != "" && gameDetail?.nameId != undefined) {
+                            if (key > -1) {
+                                if (gameDetail.rules[key]) {
+                                    console.log("duplciated key")
+                                    setValue("");
+                                    return;
+                                }
                                 setGameDetail(prev => {
                                     const newS = { ...prev };
                                     if (newS.rules.filter((rule) => rule.Key == key).length == 0)
