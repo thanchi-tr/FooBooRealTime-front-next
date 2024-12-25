@@ -6,7 +6,9 @@ Clone the both the Front and Back:
 
 My application is a
 
-> **Real Time⏱⏱⏱ ⒻⓘⓏⓏⒷⓤⓏⓏ text-based Game 🎮🎮🎮** > ![Login Page](/public/login.png)
+> **Real Time⏱⏱⏱ ⒻⓘⓏⓏⒷⓤⓏⓏ text-based Game 🎮🎮🎮** >
+
+![Login Page](/public/login.png)
 
 # Technology Stack 📲📲📲
 
