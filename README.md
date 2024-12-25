@@ -81,8 +81,7 @@ My application is a
          width="400px"
          >
 
-- delete: will earase your data (proceed with care).
-- update: to submit all change
+- Do your math.
 </div>
 
 # UI sample (Mobile):
