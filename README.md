@@ -8,7 +8,10 @@ My application is a
 
 > **Real Time⏱⏱⏱ ⒻⓘⓏⓏⒷⓤⓏⓏ text-based Game 🎮🎮🎮** >
 
-![Login Page](/public/login.png)
+<img src="./public/login.png"
+         alt="Home Page"
+         width="400px"
+         >
 
 # Technology Stack 📲📲📲
 
