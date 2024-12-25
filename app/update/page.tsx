@@ -24,9 +24,19 @@ const UpdateGamesContext = () => {
 
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games`;
         try {
+            const accessKey = await axios.get("/api/get-access-token", {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (accessKey.status != 200) {
+                console.error("Error to retrieve Access key");
+
+            }
             const response = await axios.get(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
+                    "Authorization": `Bearer ${accessKey.data.access_token}`,
                 },
             });
             setSelectedOptionIndex(-1);//reset
@@ -42,9 +52,19 @@ const UpdateGamesContext = () => {
 
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/${contexts[selectedOptionIndex].gameId.replaceAll(` `, `%20`)}`;
         try {
+            const accessKey = await axios.get("/api/get-access-token", {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (accessKey.status != 200) {
+                console.error("Error to retrieve Access key");
+
+            }
             await axios.delete(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
+                    "Authorization": `Bearer ${accessKey.data.access_token}`,
                 },
             });
             // update the list

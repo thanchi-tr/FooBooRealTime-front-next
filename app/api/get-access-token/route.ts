@@ -1,17 +1,34 @@
-import { getAccessToken } from "@auth0/nextjs-auth0";
+import axios from "axios";
 import { NextResponse } from "next/server";
 
 export async function GET() {
   try {
-    // Your logic to retrieve the access token
-    const { accessToken } = await getAccessToken(); // Replace with actual token retrieval logic
+    // Make the request to Auth0's `/oauth/token` endpoint
+    const response = await axios.post(
+      "https://dev-llzbopidy6i26kov.us.auth0.com/oauth/token",
+      new URLSearchParams({
+        grant_type: "client_credentials",
+        client_id: process.env.AUTH0_CLIENT_ID!,
+        client_secret: process.env.AUTH0_CLIENT_SECRET!,
+        audience: "https://dev-llzbopidy6i26kov.us.auth0.com/api/v2/",
+      }).toString(),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+      }
+    );
 
-    // Return the access token in the response
-    return NextResponse.json({ accessToken });
-  } catch (error) {
-    console.error("Error fetching access token:", error);
+    // Return the token to the client
+    return NextResponse.json(response.data);
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      console.error("Error fetching token:", error.message);
+    } else {
+      console.error("Unknown error occurred:", error);
+    }
     return NextResponse.json(
-      { error: "Failed to fetch access token" },
+      { error: "Failed to fetch token" },
       { status: 500 }
     );
   }

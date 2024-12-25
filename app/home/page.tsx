@@ -1,9 +1,8 @@
-"use client"
 import Brand from '@/components/clients/Functional/UserNLogOut';
 import Link from 'next/link';
 const Home = () => {
     const navs: { name: string, url: string }[] = [
-        { name: "Home", url: "/home" },
+        { name: "Home", url: "/" },
         { name: "Add", url: "/create-game" },
         { name: "update", url: "/update" },
         { name: "Loby", url: "/loby" },

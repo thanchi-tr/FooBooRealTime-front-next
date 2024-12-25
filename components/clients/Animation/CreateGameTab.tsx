@@ -37,23 +37,34 @@ const CreateGameTab = () => {
     const GameCreationHandler = async () => {
         if (gameDetail.nameId == "")
             return; // name is the key, uniqure and required
-
         const playerId = "09ac5e84-db5c-4131-0d1c-08dd1c5384cf";
-
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/Game`;
 
-        const gameData = {
-            authorId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
-            gameId: gameDetail.nameId,
-            range: range,
-            rules: JSON.stringify({
-                RuleList: gameDetail.rules,
-            }),
-        };
         try {
+
+            const accessKey = await axios.get("/api/get-access-token", {
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            });
+            if (accessKey.status != 200) {
+                console.error("Error to retrieve Access key");
+
+            }
+            console.log(accessKey)
+            const gameData = {
+                authorId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
+                gameId: gameDetail.nameId,
+                range: range,
+                rules: JSON.stringify({
+                    RuleList: gameDetail.rules,
+                }),
+            };
+
             const response = await axios.post(apiUrl, gameData, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
+                    "Authorization": `Bearer ${accessKey.data.access_token}`,
                 },
             });
             if (response.status == 201) {

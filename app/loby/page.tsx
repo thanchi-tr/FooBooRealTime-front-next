@@ -1,4 +1,3 @@
-
 import SessionPresentation from "@/components/clients/Animation/SessionPresentation";
 import Brand from "@/components/clients/Functional/UserNLogOut";
 import Link from "next/link";
