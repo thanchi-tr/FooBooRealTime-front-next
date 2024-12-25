@@ -97,7 +97,7 @@ My application is a
          alt="Home Page"
          width="195px"
          >
-    <img src="./public/Game.png"
+    <img src="./public/game.png"
          alt="Home Page"
          width="210px"
          >
