@@ -110,3 +110,7 @@ My application is a
          width="210px"
          >
 </figure>
+
+# Up-comming:
+
+[ ] Multiplayer feature.
