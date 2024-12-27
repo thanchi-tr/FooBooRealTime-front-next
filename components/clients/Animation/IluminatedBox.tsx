@@ -1,11 +1,12 @@
 'use client';
 
 interface boxConfig {
+    isDisable: boolean,
     text: string,
     isSelect: boolean,
     clickHandler: () => void // task that this button suppose to do
 }
-const IluminatedBox = ({ text = "", isSelect, clickHandler }: boxConfig) => {
+const IluminatedBox = ({ text = "", isSelect, clickHandler, isDisable }: boxConfig) => {
     // const [isSelect, setIsSelect] = useState(false);
     return (<div
         className={`
@@ -15,7 +16,9 @@ const IluminatedBox = ({ text = "", isSelect, clickHandler }: boxConfig) => {
             rounded-md hover:cursor-pointer
             hover:border-foreground border-2 border-transparent
              shadow-black
-            ${isSelect ? "shadow-lg bg-foreground/75 tracking-wide" : "shadow-inner text-foreground/90 font-bold bg-foregroundShadow/20"}
+            ${isSelect
+                ? ` ${!isDisable ? "bg-foreground/75 shadow-lg" : "shadow-md bg-white/15 text-black/65"} tracking-wide`
+                : `shadow-inner ${!isDisable ? "text-foreground/90" : "text-black/65 shadow-inner "} font-bold bg-foregroundShadow/20`}
             `}
 
         onClick={clickHandler}

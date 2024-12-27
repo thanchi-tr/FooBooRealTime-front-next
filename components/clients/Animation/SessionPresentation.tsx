@@ -40,7 +40,6 @@ const SessionPresentation = () => {
         () => {
             // loading the session
             if (connection == null) {
-                console.log("trigger Connecting")
                 connect();
             }
         }, []
@@ -50,6 +49,7 @@ const SessionPresentation = () => {
         () => {
             if (connection != null) {
                 connection.on("SupplyAvailableSessions", (sessions: SessionT[]) => {
+                    console.log(sessions)
                     loadComplete();
                     setSessions(sessions);
                 });

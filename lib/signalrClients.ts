@@ -15,7 +15,6 @@ const getAccessToken_ = async () => {
     });
     if (response.status == 200) {
       const result = response.data; // Assuming `accessToken` is returned in response
-
       return result;
     }
   } catch (error) {
@@ -34,7 +33,6 @@ const CreateSignalRConnection: (hubUrl: string) => HubConnection = (hubUrl) => {
         if (!token) {
           console.error("Failed to retrieve access token");
         }
-        console.log(token);
         return token ?? "";
       },
     })

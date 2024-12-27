@@ -11,25 +11,26 @@ import { useLoadingContext } from "@/hooks/context/useLoadingContext";
 import LoadingScreen from "../Animation/LoadingScreen";
 import { useSearchParams } from 'next/navigation';
 import { useUser } from "@auth0/nextjs-auth0/client";
+import NumberSetter from "../Functional/NumberSetter";
+import { scoreT } from "@/lib/type";
+import { toGuidId } from "@/lib/generator";
 
 
 
 const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     const searchParams = useSearchParams();
-    const [playerState, setPlayerState] = useState([
-        { name: "june", isReady: false },
-    ])
+    const [playerState, setPlayerState] = useState<{
+        name: string,
+        id: string,
+        IsReady: boolean
+    }[]>([])
     const { user } = useUser();
-    const [isAdjustTime, setIsAdjustTime] = useState(false);
-    const { name, rules, setName, setRules, setId, setQuestion, time, setTime } = useSessionContext();
-    const [temporarilyAdjTime, setTemporarilyAdjTime] = useState(time);
+    const { name, rules, setName, setRules, setId, setQuestion, time, setTime, setHost, host } = useSessionContext();
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(!(searchParams.get("isOpenRule") == "false"), !(searchParams.get("isOpenRule") == "false"));
-    const { connect, connection, invoke } = useSignalRContext();
+    const { connect, connection, invoke, connectionId } = useSignalRContext();
     const { isLoaded, startLoading, loadComplete } = useLoadingContext();
-    // const [participantCount, _] = useState(1);
+    const [isHost, setIsHost] = useState(false);
     const router = useRouter();
-
-
     // load the information in
     useEffect(
         () => {
@@ -42,66 +43,68 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     console.log("All player ready: About to start")
                     router.push("../game")
                 });
-                // connection.on("SupplyScoreBoard", (scoreBoard: scoreT[]) => {
-                //     const _playerScores = scoreBoard.map(({ isReady }: scoreT) => {
+                connection.on("NotifyReadyStatesChange", (scoreBoard: scoreT[]) => {
+                    const _playerScores = scoreBoard.map(({ isReady, playerConnectionId }: scoreT) => {
+                        return {
+                            name: /*playerConnectionId*/ "June",
+                            id: playerConnectionId,
+                            IsReady: isReady
+                        };
+                    });
 
-                //         // You can now use these variables to transform the object
-                //         return {
-                //             name: /*playerConnectionId*/ "June",
-                //             IsReady: isReady
-                //         };
-                //     });
-
-                //     console.log(_playerScores);
-                //     setParticipantCount(_playerScores.length);
-                // })
+                    console.log(_playerScores)
+                    setPlayerState(_playerScores);
+                })
                 connection.on("SupplySessionInfo", (
                     gameName: string,
                     rules_: Map<string, string>,
+                    hostId: string,
+                    time: number
                 ) => {
+
+                    console.log(hostId);
                     const sanitisedRules = Object.entries(rules_).map(([key, value]) => ({
                         Key: Number(key), // Ensure key is a number if necessary
                         Value: value
                     }))
+                    console.log(hostId);
                     setName(gameName);
+                    setHost(hostId);
                     setRules(sanitisedRules);
+                    if (time) setTime(time);
                     loadComplete();
                 })
                 setId(sessionId);
                 invoke("JoinSession", sessionId);
-                setTime(1);
-                invoke("SupplyGameTime", 1);
             }
             else {
                 connect();
             }
         }, [connection]
     );
+    useEffect(
+        () => {
+            if (host != "") {
+                const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
+
+                if (playerId == host) {
+                    console.log("===isHost")
+                    setIsHost(true);
+                    setTime(1);
+                    invoke("SupplyGameTime", 1);
+                }
+            }
+        }, [host]
+    )
+
 
     const playerReadyToggle = useCallback((index: number) => {
         if (connection != null) {
             invoke("TogglePlayerReady");
         }
-        setPlayerState((prev) => {
 
-            // Create a shallow copy of the array
-            const updatedPlayers = [...prev];
-
-            // Create a shallow copy of the specific player object
-            updatedPlayers[index] = {
-                ...updatedPlayers[index],
-                isReady: !updatedPlayers[index].isReady, // Toggle the isReady property
-            };
-            // Return the updated array
-            return updatedPlayers;
-        });
     }, [playerState]);
 
-    useEffect(
-        () => {
-            setTemporarilyAdjTime(time);
-        }, [time]
-    )
 
     const toLobyClickHandler = useCallback(
         () => {
@@ -119,14 +122,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         }
         , []
     );
-    const ToggleSetTime = useCallback(() => {
-        if (temporarilyAdjTime != time) // out of synce
-        {
-            console.log(temporarilyAdjTime)
-            invoke("SupplyGameTime", temporarilyAdjTime);
-        }
-        setIsAdjustTime(prev => !prev)
-    }, [temporarilyAdjTime])
+
     return (<><div
         className={`relative flex flex-row flex-grow justify-evenly
             items-center h-screen w-screen bg-background
@@ -162,115 +158,34 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     className={`hover:cursor-pointer hover:animate-pulse hover:underline`}
                     onClick={toHomeClickHandler}> Home</div>
             </div>
-            {playerState.map(
+            {playerState && playerState.map(
                 (player, i) =>
-                    <div key={`player-${user?.name ?? `${i}`}-${i}`} className={`w-[90%]`}>
-                        <IluminatedBox text={user?.name?.split(" ")[0] ?? ""} isSelect={player.isReady} clickHandler={() => playerReadyToggle(i)}></IluminatedBox>
+                    <div key={`player-${user?.name ?? `${i}`}-${i}`}
+                        className={`w-[90%]
+                        ${(connectionId == player.id) ? "" : "pointer-events-none"}
+                        `}>
+                        <IluminatedBox
+                            text={(connectionId != player.id) ? user?.name?.split(" ")[0] ?? "" : "You"}
+                            isSelect={player.IsReady} clickHandler={() => playerReadyToggle(i)}
+                            isDisable={(connectionId != player.id)}
+
+                        />
                     </div>
             )}
         </div>
-        <div className={`group absolute bottom-[4%] p-1 z-20 
-            text-xl text-black/80 font-mainfont text-center
-            `}>
-            <div className={`
-                            absolute top-[20%] left-0
-                            h-full w-full 
-                            rounded-full scale-y-[60%] scale-x-110
-                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                            group-hover:from-foreground/40
-                            via-foreground/0 to-pink/0 
-                            group-hover:animate-pulse
-                            `} />
-            <div className={`
-                            absolute top-[20%] left-0
-                            h-full w-full 
-                            rounded-full scale-y-75 scale-x-[120%]
-                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                            group-hover:from-foreground/20
-                            via-foreground/0 to-pink/0 
-                            group-hover:animate-pulse
-                            `} />
-            <div className={`
-                            absolute top-[20%] left-0
-                            h-full w-full 
-                            rounded-full scale-y-100 scale-x-[135%]
-                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                            group-hover:from-foreground/10
-                            via-foreground/0 to-pink/0 
-                            group-hover:animate-pulse
-                            `} />
-            <div className={`
-                            absolute top-[20%] left-0
-                            h-full w-full 
-                            rounded-full scale-y-125 scale-x-[165%]
-                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                            group-hover:from-foreground5
-                            via-foreground/0 to-pink/0 
-                            group-hover:animate-pulse
-                            `} />
-            {name}
-            <div className={
-                `relative
-                bg-foreground/70 rounded-3xl hover:bg-foreground hover:cursor-pointer hover:text-white text-black px-2 `}
-                onClick={ToggleSetTime}
-            >{time} {time < 2 ? "minute " : "minutes"}
+        {/* Setting time screen */}
 
-
-            </div>
-
-        </div>
-        <form className={`
-            absolute 
-            ${isAdjustTime ? "flex" : "hidden"}
-            flex items-center justify-center
-            h-full w-full  z-10
-            overflow-clip backdrop-blur-3xl
-            bg-foregroundShadow/5 shadow-2xl 
-            shadow-black rounded-sm
-            `}
-            onSubmit={(event: React.FormEvent<HTMLFormElement>) => {
-                event.preventDefault(); // Prevent the default form submission behavior
-                ToggleSetTime();
-            }}
-        >
-            <label
-                className={`absolute top-[15vw] 
-                    p-2 rounded-sm
-                    uppercase font-mainfont font-extrabold  
-                    bg-foreground/80
-                    shadow-inner shadow-black`}
-                onClick={ToggleSetTime}
-            > set game time</label>
-            <div
-                className="absolute top-0 h-full w-full z-0
-                hover:cursor-pointer
-                "
-                onClick={ToggleSetTime}
-            ></div>
-            <input
-                type="number"
-                spellCheck="false"
-                value={temporarilyAdjTime}
-                onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
-                    let potentialTime = Number(e.target.value);
-                    potentialTime = potentialTime < 1 ? 1 : potentialTime;
-                    setTemporarilyAdjTime(potentialTime);
-
-                }} // Update state on input change
-                placeholder="Enter your answer"
-                className={`box-border z-50
-                    bg-foreground rounded-md text-textColour text-3xl pl-2 text-center
-                    font-mainfont w-1/6 aspect-square scale-125 overflow-hidden
-                    appearance-none focus:outline-none`}
-            />
-        </form>
+        <NumberSetter
+            name={name} curValue={time} setterHandler={invoke}
+            isAdjustable={isHost}
+        ></NumberSetter>
 
 
     </div>
         <div
             className={`absolute bottom-0 right-0 font-mainfont text-sm scale-90 text-black/70 tracking-tighter`}
         >
-            player:<p className="pl-2 inline text-md text-yellow-400">{playerState.length}</p> over <p className="inline text-white/80">{playerState.length}</p>
+            player:<p className="pl-2 inline text-md text-yellow-400">{playerState.reduce((acc, player) => acc + (player.IsReady ? 1 : 0), 0)}</p> over <p className="inline text-white/80">{playerState.length}</p>
         </div>
     </>)
 }

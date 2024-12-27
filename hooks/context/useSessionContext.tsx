@@ -14,6 +14,8 @@ interface SessionContext {
     setQuestion: Dispatch<SetStateAction<number>>;
     setTime: Dispatch<SetStateAction<number>>;
     reset: () => void;
+    host: string;
+    setHost: Dispatch<SetStateAction<string>>;
 }
 
 const SessionContext = createContext<SessionContext | undefined>(undefined);
@@ -31,6 +33,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     const [rules, setRules] = useState<{ Key: number, Value: string }[]>([]);
     const [id, setId] = useState("");
     const [question, setQuestion] = useState(-1);
+    const [host, setHost] = useState("");
     const [time, setTime] = useState(-1);
     const reset = () => {
         setName("FooBoo");
@@ -41,7 +44,7 @@ export const SessionProvider = ({ children }: { children: ReactNode }) => {
     }
     return (
         <SessionContext.Provider value={
-            { name, rules, id, setName, setRules, setId, question, setQuestion, time, setTime, reset }
+            { name, rules, id, setName, setRules, setId, question, setQuestion, time, setTime, reset, host, setHost }
         }>
             {children}
         </SessionContext.Provider>

@@ -3,9 +3,8 @@
 import CreateSignalRConnection from "@/lib/signalrClients";
 import { SessionT } from "@/lib/type";
 import { HubConnection } from "@microsoft/signalr";
-import { createContext, useContext, ReactNode, useState, useCallback } from "react";
+import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-import { toGuidId } from "@/lib/generator";
 
 
 interface SignalRContext {
@@ -15,6 +14,7 @@ interface SignalRContext {
     connection: HubConnection | null;
     invoke: (methodName: string, ...args: any[]) => Promise<any>;
     isInSession: boolean;
+    connectionId: string;
 }
 interface clientRegisteredCallBack {
     onSupplyQuesiton?: (question: number) => void; // supply the player a number
@@ -44,30 +44,57 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
     const [connection, setConnection] = useState<HubConnection | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [isInSession, setIsInSession] = useState(false);
+    const [connectionId, setConnectionId] = useState("Not set");
     const { user } = useUser();
+
     /**
-     * Attempt to connect
+         * A wrapper (UseCallback ) to provide an extra Loging functionality on top of server invokation 
+         */
+    const invoke = useCallback(async (methodName: string, ...args: any[]) => {
+        if (connection && isConnected) {
+            connection.invoke(methodName, ...args) // I am experience diffrent way to handle promiss (instead of asynchronous await)
+                .then(() => console.log("Invoked " + methodName + " successfully."))
+                .catch((err) => console.error("Error invoking " + methodName + ":", err));
+        } else {
+            console.warn("Connection rejected: Cannot invoke:", methodName);
+        }
+    }, [connection, isConnected]);
+
+    useEffect(
+        () => {
+            if (connection && isConnected)
+                invoke("RequestConnectionId");
+        }, [connection, isConnected]
+    )
+
+    /**
+     * Attempt to to abstract the connection method:
+     *  - automatically include client handler : ON:
+     *      x: NotifyEvent: the main method for server to notify general notification
+     *      x: NotifyError: Expected to be use along side ErrorContext (not implement yet)
      */
     const connect = useCallback(async () => {
         if (connection && isConnected) {
             console.warn("Already connected to SignalR.");
             return;
         }
-        const conn = CreateSignalRConnection("https://localhost:5001/hub/game");
+        const conn = CreateSignalRConnection(process.env.NEXT_PUBLIC_SIGNALR_HUB_URL ?? "");
         conn.onclose((error) => {
+            if (error) {
+                console.error("Error:@SignalR:OnDisconnect:" + error)
+            }
             setIsConnected(false);
         });
         conn.on("notifyevent", (msg: string) => {
-            console.log("Receive notification: " + msg)
+            console.log("SignalR: " + msg)
         })
-        conn.on("NotifyError", (err: string) => {
-            console.error("Error: " + err)
+        conn.on("notifyerror", (err: string) => {
+            console.error("Error:@SignalR message stream: " + err)
+        })
+        conn.on("SupplyConnectionId", (connectionId: string) => {
+            setConnectionId(connectionId);
         })
         try {
-            console.log(user)
-            const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
-            console.log(playerId)
-
             await conn.start();
             setConnection(conn);
             setIsConnected(true);
@@ -76,17 +103,11 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
         }
     }, [connection, isConnected]);
 
-    const invoke = useCallback(async (methodName: string, ...args: any[]) => {
-        if (connection && isConnected) {
-            console.log("Trigger:" + methodName + " in Server side of signal R");
-            connection.invoke(methodName, ...args)
-                .then(() => console.log("Invoked GetAvailableSessions successfully."))
-                .catch((err) => console.error("Error invoking GetAvailableSessions:", err));;
-        } else {
-            console.warn("SignalR not connected. Cannot invoke:", methodName);
-        }
-    }, [connection, isConnected]);
 
+
+    /**
+     * Handle disconnecting, reset the context
+     */
     const disconnect = useCallback(async () => {
         if (connection) {
             try {
@@ -100,7 +121,7 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
     }, [connection]);
 
     return (
-        <SignalRContext.Provider value={{ isConnect, connect, disconnect, invoke, connection, isInSession }}>
+        <SignalRContext.Provider value={{ isConnect, connect, disconnect, invoke, connection, isInSession, connectionId }}>
             {children}
         </SignalRContext.Provider>
     );
