@@ -13,9 +13,8 @@ const getAccessToken_ = async () => {
         "Content-Type": "application/json",
       },
     });
-
     if (response.status == 200) {
-      const result = response.data.access_token; // Assuming `accessToken` is returned in response
+      const result = response.data; // Assuming `accessToken` is returned in response
 
       return result;
     }

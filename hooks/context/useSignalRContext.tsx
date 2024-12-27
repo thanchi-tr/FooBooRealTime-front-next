@@ -4,6 +4,8 @@ import CreateSignalRConnection from "@/lib/signalrClients";
 import { SessionT } from "@/lib/type";
 import { HubConnection } from "@microsoft/signalr";
 import { createContext, useContext, ReactNode, useState, useCallback } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
+import { toGuidId } from "@/lib/generator";
 
 
 interface SignalRContext {
@@ -42,7 +44,7 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
     const [connection, setConnection] = useState<HubConnection | null>(null);
     const [isConnected, setIsConnected] = useState(false);
     const [isInSession, setIsInSession] = useState(false);
-
+    const { user } = useUser();
     /**
      * Attempt to connect
      */
@@ -58,8 +60,14 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
         conn.on("notifyevent", (msg: string) => {
             console.log("Receive notification: " + msg)
         })
-
+        conn.on("NotifyError", (err: string) => {
+            console.error("Error: " + err)
+        })
         try {
+            console.log(user)
+            const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
+            console.log(playerId)
+
             await conn.start();
             setConnection(conn);
             setIsConnected(true);

@@ -1,7 +1,9 @@
 'use client';
+import { toGuidId } from "@/lib/generator";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useState } from "react";
+import { useUser } from "@auth0/nextjs-auth0/client";
 
 interface gameConfig {
     nameId: string,
@@ -13,7 +15,7 @@ const CreateGameTab = () => {
     const [key, setKey] = useState(1);
     const [range, setRange] = useState(10);
     const [value, setValue] = useState("");
-
+    const { user } = useUser();
     const [gameDetail, setGameDetail] = useState<gameConfig>({
         nameId: "",
         rules: [
@@ -31,7 +33,9 @@ const CreateGameTab = () => {
     const GameCreationHandler = async () => {
         if (gameDetail.nameId == "")
             return; // name is the key, uniqure and required
-        const playerId = "09ac5e84-db5c-4131-0d1c-08dd1c5384cf";
+        // const playerId = "09ac5e84-db5c-4131-0d1c-08dd1c5384cf";
+        const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
+
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/Game`;
 
         try {
@@ -56,7 +60,7 @@ const CreateGameTab = () => {
             const response = await axios.post(apiUrl, gameData, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
-                    "Authorization": `Bearer ${accessKey.data.access_token}`,
+                    "Authorization": `Bearer ${accessKey.data}`,
                 },
             });
             if (response.status == 201) {

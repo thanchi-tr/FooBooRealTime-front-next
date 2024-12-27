@@ -1,5 +1,7 @@
 'use client';
 
+import { toGuidId } from "@/lib/generator";
+import { useUser } from "@auth0/nextjs-auth0/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -21,6 +23,7 @@ const UpdateGamesContext = () => {
     const [tempKey, setTempKey] = useState(1)
     const [tempVal, setTempVal] = useState("")
     const [rules, setRule] = useState<ruleT[]>([])
+    const { user } = useUser();
     const router = useRouter();
     const toHomeClickHandler = useCallback(
         () => { router.push("/") }
@@ -47,7 +50,7 @@ const UpdateGamesContext = () => {
         [selectedOptionIndex]
     )
     const GetGamesContext = async () => {
-        const playerId = "09ac5e84-db5c-4131-0d1c-08dd1c5384cf";
+        const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
 
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games`;
         try {
@@ -63,7 +66,7 @@ const UpdateGamesContext = () => {
             const response = await axios.get(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
-                    "Authorization": `Bearer ${accessKey.data.access_token}`,
+                    "Authorization": `Bearer ${accessKey.data}`,
                 },
             });
             setSelectedOptionIndex(-1);//reset
@@ -75,7 +78,7 @@ const UpdateGamesContext = () => {
     const DeleteGameContext = async () => {
         if (selectedOptionIndex == -1)
             return;
-        const playerId = "09ac5e84-db5c-4131-0d1c-08dd1c5384cf";
+        const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
 
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/${contexts[selectedOptionIndex].gameId.replaceAll(` `, `%20`)}`;
 
@@ -92,7 +95,7 @@ const UpdateGamesContext = () => {
             await axios.delete(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
-                    "Authorization": `Bearer ${accessKey.data.access_token}`,
+                    "Authorization": `Bearer ${accessKey.data}`,
                 },
             });
             // update the list
@@ -104,7 +107,7 @@ const UpdateGamesContext = () => {
     const UpdateGameContext = async () => {
         if (selectedOptionIndex == -1)
             return;
-        const playerId = "09ac5e84-db5c-4131-0d1c-08dd1c5384cf";
+        const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
 
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/${contexts[selectedOptionIndex].gameId.replaceAll(` `, `%20`)}`;
 
@@ -134,7 +137,7 @@ const UpdateGamesContext = () => {
             await axios.patch(apiUrl, gameData, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
-                    "Authorization": `Bearer ${accessKey.data.access_token}`,
+                    "Authorization": `Bearer ${accessKey.data}`,
                 },
             });
             // update the list
