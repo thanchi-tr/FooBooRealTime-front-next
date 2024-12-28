@@ -101,7 +101,7 @@ const SessionPresentation = () => {
                                                     text-white/60 uppercase 
                                                      bg-background p-2 font-mainfont
                                                      rounded-t-none rounded-2xl
-                                                     mt-2
+                                                     mt-2 text-sm scale-90 text-center
                                                     `}> {session.sessionId} </p>
                                             </div>
 
@@ -109,78 +109,82 @@ const SessionPresentation = () => {
                                                 // session.ruleCount ?? //can add after alter
                                                 0}</div>
                                             <div className={`
-                            group-hover:animate-pulse
-                            absolute top-0 left-0
-                            h-full w-full scale-x-[125%] scale-y-[170%]
-                            rounded-full
-                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                            group-hover:from-foreground/20
-                            via-foreground/0 to-pink/0 
-                            `} />
+                                                group-hover:animate-pulse
+                                                absolute top-0 left-0
+                                                h-full w-full scale-x-[125%] scale-y-[170%]
+                                                rounded-full
+                                                bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                                                group-hover:from-foreground/20
+                                                via-foreground/0 to-pink/0 
+                                                `} />
                                             <div className={`
-                            group-hover:animate-pulse
-                            absolute top-0 left-0
-                            h-full w-full scale-x-[110%] scale-y-[150%]
-                            rounded-full
-                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                            group-hover:from-foreground/40
-                            via-foreground/0 to-pink/0 
-                            `} />
+                                                group-hover:animate-pulse
+                                                absolute top-0 left-0
+                                                h-full w-full scale-x-[110%] scale-y-[150%]
+                                                rounded-full
+                                                bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                                                group-hover:from-foreground/40
+                                                via-foreground/0 to-pink/0 
+                                                `} />
                                             <div className={`
-                            group-hover:animate-pulse
-                            absolute top-0 left-0
-                            h-full w-full scale-x-[140%] scale-y-[180%]
-                            rounded-full
-                            bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                            group-hover:from-foreground/10
-                            via-foreground/0 to-pink/0 
-                            `} />
+                                                group-hover:animate-pulse
+                                                absolute top-0 left-0
+                                                h-full w-full scale-x-[140%] scale-y-[180%]
+                                                rounded-full
+                                                bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                                                group-hover:from-foreground/10
+                                                via-foreground/0 to-pink/0 
+                                                `} />
 
                                         </div>))
                                 //defaultly no session
                                 : <div
 
                                     className={`group
-                        flex flex-row relative
-                        justify-between
-                        w-[60%] h-auto
-                        px-[8%] text-white/60
-                        shadow-inner shadow-black rounded-md 
-                        hover:shadow-2xl hover:bg-foreground/95 hover:cursor-pointer
-                        border-t-2 border-x-[0.06px] hover:text-white
-                         border-white/10 font-bold
-                `}
-
+                                        flex flex-row relative
+                                        justify-between font-mainfont
+                                        w-[60%] h-auto
+                                        px-[8%] 
+                                        shadow-inner shadow-black rounded-md 
+                                        hover:shadow-2xl hover:bg-foreground/70 hover:cursor-pointer
+                                        border-t-2 border-x-[0.06px] hover:text-white
+                                        border-white/10 font-bold
+                                `}
                                 >
-                                    <div> No session</div>
+                                    <div className="z-50"
+                                        onClick={handleCreateNewSessionClick}
+                                    >
+                                        <p className={`flex group-hover:hidden text-white/60`}>No session</p>
+                                        <p className={`group-hover:flex hidden uppercase text-white`}>Add session</p>
+                                    </div>
                                     <div className={``}> </div>
                                     <div className={`
-                        group-hover:animate-pulse
-                        absolute top-0 left-0
-                        h-full w-full scale-x-[125%] scale-y-[170%]
-                        rounded-full
-                        bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                        group-hover:from-foreground/20
-                        via-foreground/0 to-pink/0 
-                        `} />
+                                        group-hover:animate-pulse
+                                        absolute top-0 left-0
+                                        h-full w-full scale-x-[125%] scale-y-[170%]
+                                        rounded-full
+                                        bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                                        group-hover:from-foreground/20
+                                        via-foreground/0 to-pink/0 
+                                        `} />
                                     <div className={`
-                        group-hover:animate-pulse
-                        absolute top-0 left-0
-                        h-full w-full scale-x-[110%] scale-y-[150%]
-                        rounded-full
-                        bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                        group-hover:from-foreground/40
-                        via-foreground/0 to-pink/0 
-                        `} />
+                                        group-hover:animate-pulse
+                                        absolute top-0 left-0
+                                        h-full w-full scale-x-[110%] scale-y-[150%]
+                                        rounded-full
+                                        bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                                        group-hover:from-foreground/40
+                                        via-foreground/0 to-pink/0 
+                                        `} />
                                     <div className={`
-                        group-hover:animate-pulse
-                        absolute top-0 left-0
-                        h-full w-full scale-x-[140%] scale-y-[180%]
-                        rounded-full
-                        bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
-                        group-hover:from-foreground/10
-                        via-foreground/0 to-pink/0 
-                        `} />
+                                        group-hover:animate-pulse
+                                        absolute top-0 left-0
+                                        h-full w-full scale-x-[140%] scale-y-[180%]
+                                        rounded-full
+                                        bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))]
+                                        group-hover:from-foreground/10
+                                        via-foreground/0 to-pink/0 
+                                        `} />
 
                                 </div>
 
@@ -202,7 +206,7 @@ const SessionPresentation = () => {
                         shadow-inner  font-bold bg-foregroundShadow/20
                         hover:cursor-pointer
                 `}
-                    onClick={() => { handleCreateNewSessionClick() }}
+                    onClick={handleCreateNewSessionClick}
                 >
 
                     <div

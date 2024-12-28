@@ -25,17 +25,17 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         IsReady: boolean
     }[]>([])
     const { user } = useUser();
-    const { name, rules, setName, setRules, setId, setQuestion, time, setTime, setHost, host } = useSessionContext();
+    const { name, rules, setName, setRules, setId, setQuestion, time, setTime, setHost, host, id } = useSessionContext();
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(!(searchParams.get("isOpenRule") == "false"), !(searchParams.get("isOpenRule") == "false"));
     const { connect, connection, invoke, connectionId } = useSignalRContext();
     const { isLoaded, startLoading, loadComplete } = useLoadingContext();
     const [isHost, setIsHost] = useState(false);
     const router = useRouter();
     const NOT_SET = -1;
+
     //Establish the Signal R connection, register client RPC Handler
     useEffect(
         () => {
-            console.log(connection)
             if (connection != null) {
                 connection.on("SupplyGameTime", (gameTime: number) => setTime(gameTime));
                 connection.on("NotifyRejection", () => toLobyClickHandler()); // case session is block and player will be navigate back to loby
@@ -56,15 +56,15 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     gameName: string,
                     rules_: Map<string, string>,
                     hostId: string,
-                    time: number
+                    time_: number
                 ) => {
                     const sanitisedRules = Object.entries(rules_).map(([key, value]) => ({
                         Key: Number(key), // Ensure key is a number if necessary
                         Value: value
                     }))
                     setName(gameName);
-                    if (time) setTime(time);
                     setHost(hostId);
+                    if (time_ != time) setTime(time_)
                     setRules(sanitisedRules);
                     loadComplete();
                 })
@@ -72,7 +72,6 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                 invoke("JoinSession", sessionId);
             }
             else {
-                console.log("start loading..")
                 startLoading();
                 connect();
             }
@@ -83,14 +82,18 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             if (host != "" // if this client is the host of session
                 && toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf") == host) {
                 setIsHost(true);
-                console.log("Time::" + time)
-                if (time == NOT_SET)
-                    invoke("SupplyGameTime", 1);
+
             }
         }, [host]
     )
-
-    const playerReadyToggle = useCallback((index: number) => {
+    useEffect(
+        () => { // set the default time of room to minimum (1 min)
+            if (isHost && time == NOT_SET) {
+                invoke("SupplyGameTime", 1);
+            }
+        }, [time, isHost]
+    )
+    const playerReadyToggle = useCallback(() => {
         if (connection != null) {
             invoke("TogglePlayerReady");
         }
@@ -162,17 +165,18 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                                         <p className="animate-pulse text-white/40">{">"}</p>{"You"}
                                         <p className="animate-pulse text-white/40">{"<"}</p>
                                     </div>}
-                            isSelect={player.IsReady} clickHandler={() => playerReadyToggle(i)}
+                            isSelect={player.IsReady} clickHandler={() => playerReadyToggle()}
                             isDisable={(connectionId != player.id)}
 
                         />
                     </div>
             )}
         </div>
-        {/* Setting time screen */}
-        <NumberSetter name={name} curValue={time} setterHandler={invoke} isAdjustable={isHost} />
+        {/* Setting time screen, ReactDom treat  the Boolean as the same, use key to enfore re-rendering */}
+        {<NumberSetter key={`${isHost}`} name={name} curValue={time} setterHandler={invoke} isAdjustable={isHost} />}
     </div>
-        <div className={`absolute bottom-0 right-0 font-mainfont text-sm scale-90 text-black/70 tracking-tighter`}>
+        <div className={`absolute
+            bottom-0 right-0 font-mainfont text-sm scale-90 text-black/70 tracking-tighter`}>
             Ready:<p className="pl-2 inline text-md text-yellow-400 pr-2">{playerState.reduce((acc, player) => acc + (player.IsReady ? 1 : 0), 0)}</p> / <p className="inline text-white/80 pl-2">{playerState.length}</p>
         </div>
     </>)

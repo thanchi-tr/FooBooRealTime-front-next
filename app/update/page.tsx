@@ -21,6 +21,7 @@ const UpdateGamesContext = () => {
     const [contexts, setContexts] = useState<gameContext[]>([])
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1);
     const [tempKey, setTempKey] = useState(1)
+    const [tempRange, setTempRange] = useState(100)
     const [tempVal, setTempVal] = useState("")
     const [rules, setRule] = useState<ruleT[]>([])
     const { user } = useUser();
@@ -41,6 +42,7 @@ const UpdateGamesContext = () => {
                             val: item.Value,
                         }));
                         setRule(rules)
+                        setTempRange(contexts[selectedOptionIndex].range);
                     } catch (error) {
                         console.log(error)
                     }
@@ -114,7 +116,7 @@ const UpdateGamesContext = () => {
         const gameData = {
             authorId: "3fa85f64-5717-4562-b3fc-2c963f66afa6",
             gameId: contexts[selectedOptionIndex].gameId,
-            range: contexts[selectedOptionIndex].range,
+            range: tempRange,
             rules: JSON.stringify({
                 RuleList: rules.map((rule) => {
                     return ({
@@ -184,6 +186,15 @@ const UpdateGamesContext = () => {
                 const newRule = [...prev];
 
                 newRule[index].val = val;
+                return newRule;
+            }
+        )
+    }
+    const deleteTempVal = (index: number) => {
+        setRule(
+            prev => {
+                const newRule = [...prev];
+                newRule.splice(index, 1);
                 return newRule;
             }
         )
@@ -397,15 +408,23 @@ const UpdateGamesContext = () => {
                                     h-[6vw] w-[70%]
                                 `}
                             >
-                                <div
+                                <form
                                     className={`
-                                        relative
+                                        relative  overflow-clip
                                         h-[6vw] md:h-[5svw]  lg:h-[4vw] xl:h-[3vw] 2xl:h-[2vw]
                                         w-[45%]
                                         rounded-md text-center text-textColour
                                         hover:cursor-pointer hover:border-black/80 border-2 border-transparent
                                         bg-foreground `}
-                                >range </div>
+                                >
+
+                                    {<input className={`w-5/6 h-full bg-foreground scale-y-110`}
+                                        type="number"
+                                        value={tempRange}
+                                        placeholder="Range"
+                                        onChange={(e) => setTempRange(Number(e.target.value))}
+                                    />}
+                                </form>
 
                             </div>
 
@@ -425,7 +444,7 @@ const UpdateGamesContext = () => {
                                     ? rules.map(
                                         (rule, index) => <div
                                             key={"rule-" + index}
-                                            className={`flex flex-row `}>
+                                            className={`flex flex-row relative`}>
                                             <input className={`w-1/2 border-r-2 text-center
                                                     ${index % 2 == 0 ? "" : "bg-white/70"}
                                             `}
@@ -438,6 +457,12 @@ const UpdateGamesContext = () => {
                                                 value={rule.val}
                                                 onChange={(e) => updateVal(index, e.target.value)}
                                             />
+                                            <div className="
+                                                absolute bg-midground-1 h-full w-auto text-white border-[1px] border-black scale-x-125 translate-x-1
+                                                hover:cursor-pointer
+                                                "
+                                                onClick={() => { deleteTempVal(index) }}
+                                            >X</div>
                                         </div>
                                     )
                                     : <></>

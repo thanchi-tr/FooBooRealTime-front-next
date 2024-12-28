@@ -12,15 +12,20 @@ const NumberSetter = ({ name, setterHandler, curValue, isAdjustable }: Setter) =
     const [tempValue, setTempValue] = useState(curValue);
     const [isOpen, setIsOpen] = useState(false);
     const ToggleSetTime = useCallback(() => {
-
+        console.log("click")
+        console.log(isAdjustable)
+        console.log(tempValue)
+        console.log(curValue)
+        console.log(isOpen)
         if (!isAdjustable)
             return;
         if (tempValue != curValue) // out of synce
         {
+
             setterHandler("SupplyGameTime", tempValue);
         }
         setIsOpen(prev => !prev)
-    }, [tempValue])
+    }, [tempValue, isOpen])
 
     // keep the adjustment time start from the actual value
     useEffect(
