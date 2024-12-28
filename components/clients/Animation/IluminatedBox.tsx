@@ -1,8 +1,10 @@
 'use client';
 
+import { ReactNode } from "react";
+
 interface boxConfig {
     isDisable: boolean,
-    text: string,
+    text: string | ReactNode,
     isSelect: boolean,
     clickHandler: () => void // task that this button suppose to do
 }
@@ -23,9 +25,9 @@ const IluminatedBox = ({ text = "", isSelect, clickHandler, isDisable }: boxConf
 
         onClick={clickHandler}
     >
-        {<p className={`uppercase 
-           ${!isSelect ? " group-hover:hidden" : ""}`}>{text}</p>} <p className={`text-sm text-black/65   ${!isSelect ? " group-hover:hidden" : ""}`}> {(isSelect ? "Ready" : "Idling")}</p>
-        {<p className={` ${!isSelect ? " group-hover:block" : ""} hidden uppercase`}> Ready?</p>}
+        {<div className={`uppercase 
+           ${!isSelect ? " group-hover:hidden" : ""}`}>{text}</div>} <div className={`text-sm text-black/65   ${!isSelect ? " group-hover:hidden" : ""}`}> {(isSelect ? "Ready" : "Idling")}</div>
+        {<div className={` ${!isSelect ? " group-hover:block" : ""} hidden uppercase`}> Ready?</div>}
     </div>)
 }
 

@@ -30,6 +30,7 @@ const NumberSetter = ({ name, setterHandler, curValue, isAdjustable }: Setter) =
     )
     return (<>
         <div className={`group absolute bottom-[4%] p-1 z-20 
+            ${!isAdjustable ? "pointer-events-none" : ""}
             text-xl text-black/80 font-mainfont text-center
             `}>
             <div className={`

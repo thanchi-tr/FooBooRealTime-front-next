@@ -6,7 +6,6 @@ import { LoadingProvider } from "@/hooks/context/useLoadingContext";
 import { SignalRProvider } from "@/hooks/context/useSignalRContext";
 import { SessionProvider } from "@/hooks/context/useSessionContext";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
-import { getSession } from "@auth0/nextjs-auth0";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -34,7 +33,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getSession();
 
 
   return (
@@ -42,7 +40,7 @@ export default async function RootLayout({
       <body
         className={`${codaCaption.variable} ${geistSans.variable} ${geistMono.variable} antialiased overflow-clip`}
       >
-        <UserProvider user={session?.user}>
+        <UserProvider>
           <SignalRProvider>
             <LoadingProvider>
               <SessionProvider>

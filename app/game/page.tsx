@@ -23,7 +23,17 @@ const Game = () => {
     const { startLoading } = useLoadingContext();
     const { connect, invoke, connection } = useSignalRContext();
     const router = useRouter();
+    const NO_QUESTION = -1;
 
+    useEffect( // ensure if question invalid, navigate back to loby
+        () => {
+            // for now, as soon as you refresh the game disconnect, and every one get kick out.
+            // later on we can create a re-connecting machanism
+            if (question == NO_QUESTION) {
+                router.push("./loby");
+            }
+        }, []
+    )
 
     useEffect(
         () => {
@@ -32,39 +42,21 @@ const Game = () => {
             } else {
                 triggerStart();
                 connection.on("SupplyQuestion", (question) => setQuestion(question))
-                connection.on("notifyGameEnd", () => {
-                    router.push("../score/")
-                })
+                connection.on("notifyGameEnd", () => router.push("../score/"))
             }
         },
         [connection]
     )
-    useEffect(() => {
+    useEffect(() => { // short cut mapping
         const handleKeyDown = (event: KeyboardEvent) => {
             if (event.key.toLowerCase() === "tab" && event.shiftKey) {
                 event.preventDefault();
                 OpenHandler();
             }
         };
-
         window.addEventListener("keydown", handleKeyDown);
-
-        return () => {
-            window.removeEventListener("keydown", handleKeyDown);
-        };
+        return () => window.removeEventListener("keydown", handleKeyDown);
     }, [OpenHandler]);
-    //replace with real loading task
-    useEffect( // move to score display
-        () => {
-            if (timeRemain == 0) {
-                setTimeout(() => {
-                    console.log("timer is up")
-                    // router.push("../score/")
-                }, 200)
-            }
-        }, [timeRemain]
-    )
-
     const toLobyClickHandler = useCallback(
         () => {
             reset()
@@ -75,8 +67,6 @@ const Game = () => {
         , []
     );
     return (
-
-
         <div
             className={`
                 relative

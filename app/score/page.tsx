@@ -8,9 +8,9 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const ScoreScreen = () => {
-    const [playerScores, setPlayerScores] = useState<{ playerName: string, count: number }[]>([])
+    const [playerScores, setPlayerScores] = useState<{ playerName: string, count: number, id: string }[]>([])
     const { id, name } = useSessionContext();
-    const { connect, invoke, connection } = useSignalRContext();
+    const { connect, invoke, connection, connectionId } = useSignalRContext();
     const { startLoading } = useLoadingContext();
     const router = useRouter();
 
@@ -33,7 +33,7 @@ const ScoreScreen = () => {
         }
         , []
     );
-    const sanitisedScores = useCallback((playerScores: { playerName: string, count: number }[]) => [...playerScores].sort((a, b) => b.count - a.count), []);
+    const sanitisedScores = useCallback((playerScores: { playerName: string, count: number, id: string }[]) => [...playerScores].sort((a, b) => b.count - a.count), []);
 
     //load data
     useEffect(
@@ -42,13 +42,16 @@ const ScoreScreen = () => {
                 connect();
             } else {
                 connection.on("SupplyScoreBoard", (scoreBoard: scoreT[]) => {
-                    const _playerScores = scoreBoard.map(({ correctCount }: scoreT) => {
+                    console.log(scoreBoard)
+                    const _playerScores = scoreBoard.map(({ correctCount, playerConnectionId }: scoreT) => {
                         // You can now use these variables to transform the object
                         return {
                             playerName: /*playerConnectionId*/ "June",
                             count: correctCount,
+                            id: playerConnectionId
                         };
                     });
+                    console.log(_playerScores)
                     setPlayerScores(sanitisedScores(_playerScores));
                 });
                 invoke("RequestScoreBoard")
@@ -164,12 +167,19 @@ const ScoreScreen = () => {
                             <div className={`
                         ${i == 0 ? "text-white/85" : ""}
                          ${i == 1 ? "text-black/85" : ""}
-                         ${i == 2 ? "text-white/75" : "text-textColour"}
-                        `}> {score.playerName}</div>
+                         ${i == 2 ? "text-white/75" : "text-black/30"}
+                        `}>
+                                {(connectionId != score.id)
+                                    ? score.playerName.split(" ")[0] ?? ""
+                                    : <div className="flex flex-row">
+                                        <p className="animate-pulse text-white/40">{">"}</p>{"You"}
+                                        <p className="animate-pulse text-white/40">{"<"}</p>
+                                    </div>}
+                            </div>
                             <div className={`
                         ${i == 0 ? "text-white/85" : ""}
                         ${i == 1 ? "text-black/85" : ""}
-                         ${i == 2 ? "text-white/75" : "text-textColour"}
+                         ${i == 2 ? "text-white/75" : "text-black/30"}
                         `}> {score.count}</div>
                         </div>)
                     )}

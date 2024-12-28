@@ -31,29 +31,26 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     const { isLoaded, startLoading, loadComplete } = useLoadingContext();
     const [isHost, setIsHost] = useState(false);
     const router = useRouter();
-    // load the information in
+    const NOT_SET = -1;
+    //Establish the Signal R connection, register client RPC Handler
     useEffect(
         () => {
+            console.log(connection)
             if (connection != null) {
-                connection.on("SupplyGameTime", (gameTime: number) => {
-                    setTime(gameTime);
-                });
+                connection.on("SupplyGameTime", (gameTime: number) => setTime(gameTime));
+                connection.on("NotifyRejection", () => toLobyClickHandler()); // case session is block and player will be navigate back to loby
                 connection.on("SupplyInitQuestion", (initQuestion: number) => {
                     setQuestion(initQuestion);
-                    console.log("All player ready: About to start")
                     router.push("../game")
                 });
                 connection.on("NotifyReadyStatesChange", (scoreBoard: scoreT[]) => {
-                    const _playerScores = scoreBoard.map(({ isReady, playerConnectionId }: scoreT) => {
+                    setPlayerState(scoreBoard.map(({ isReady, playerConnectionId }: scoreT) => {
                         return {
                             name: /*playerConnectionId*/ "June",
                             id: playerConnectionId,
                             IsReady: isReady
                         };
-                    });
-
-                    console.log(_playerScores)
-                    setPlayerState(_playerScores);
+                    }));
                 })
                 connection.on("SupplySessionInfo", (
                     gameName: string,
@@ -61,50 +58,43 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     hostId: string,
                     time: number
                 ) => {
-
-                    console.log(hostId);
                     const sanitisedRules = Object.entries(rules_).map(([key, value]) => ({
                         Key: Number(key), // Ensure key is a number if necessary
                         Value: value
                     }))
-                    console.log(hostId);
                     setName(gameName);
+                    if (time) setTime(time);
                     setHost(hostId);
                     setRules(sanitisedRules);
-                    if (time) setTime(time);
                     loadComplete();
                 })
                 setId(sessionId);
                 invoke("JoinSession", sessionId);
             }
             else {
+                console.log("start loading..")
+                startLoading();
                 connect();
             }
         }, [connection]
     );
     useEffect(
         () => {
-            if (host != "") {
-                const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
-
-                if (playerId == host) {
-                    console.log("===isHost")
-                    setIsHost(true);
-                    setTime(1);
+            if (host != "" // if this client is the host of session
+                && toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf") == host) {
+                setIsHost(true);
+                console.log("Time::" + time)
+                if (time == NOT_SET)
                     invoke("SupplyGameTime", 1);
-                }
             }
         }, [host]
     )
-
 
     const playerReadyToggle = useCallback((index: number) => {
         if (connection != null) {
             invoke("TogglePlayerReady");
         }
-
     }, [playerState]);
-
 
     const toLobyClickHandler = useCallback(
         () => {
@@ -165,7 +155,13 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                         ${(connectionId == player.id) ? "" : "pointer-events-none"}
                         `}>
                         <IluminatedBox
-                            text={(connectionId != player.id) ? user?.name?.split(" ")[0] ?? "" : "You"}
+                            text={ // display "you" if the box descipt the yourself, else: display their name
+                                (connectionId != player.id)
+                                    ? user?.name?.split(" ")[0] ?? ""
+                                    : <div className="flex flex-row">
+                                        <p className="animate-pulse text-white/40">{">"}</p>{"You"}
+                                        <p className="animate-pulse text-white/40">{"<"}</p>
+                                    </div>}
                             isSelect={player.IsReady} clickHandler={() => playerReadyToggle(i)}
                             isDisable={(connectionId != player.id)}
 
@@ -174,18 +170,10 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             )}
         </div>
         {/* Setting time screen */}
-
-        <NumberSetter
-            name={name} curValue={time} setterHandler={invoke}
-            isAdjustable={isHost}
-        ></NumberSetter>
-
-
+        <NumberSetter name={name} curValue={time} setterHandler={invoke} isAdjustable={isHost} />
     </div>
-        <div
-            className={`absolute bottom-0 right-0 font-mainfont text-sm scale-90 text-black/70 tracking-tighter`}
-        >
-            player:<p className="pl-2 inline text-md text-yellow-400">{playerState.reduce((acc, player) => acc + (player.IsReady ? 1 : 0), 0)}</p> over <p className="inline text-white/80">{playerState.length}</p>
+        <div className={`absolute bottom-0 right-0 font-mainfont text-sm scale-90 text-black/70 tracking-tighter`}>
+            Ready:<p className="pl-2 inline text-md text-yellow-400 pr-2">{playerState.reduce((acc, player) => acc + (player.IsReady ? 1 : 0), 0)}</p> / <p className="inline text-white/80 pl-2">{playerState.length}</p>
         </div>
     </>)
 }

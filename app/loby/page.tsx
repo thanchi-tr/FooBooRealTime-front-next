@@ -41,9 +41,7 @@ const Loby = async () => {
                     href={"./"}> Home</Link>
                 <p className={`font-mainfont text-sm text-foreground/50`}>rule count</p>
             </div>
-            <SessionPresentation
-
-            ></SessionPresentation>
+            <SessionPresentation />
 
         </div>
     </div >)

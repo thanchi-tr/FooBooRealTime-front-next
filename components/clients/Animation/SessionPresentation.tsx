@@ -14,7 +14,6 @@ const SessionPresentation = () => {
     const { connect, connection, invoke } = useSignalRContext();
     const handleSessionClick = useCallback(
         (id: string) => {
-
             router.push(`/waitroom/${id}?isOpenRule=true`);
         },
         [router]
@@ -49,7 +48,6 @@ const SessionPresentation = () => {
         () => {
             if (connection != null) {
                 connection.on("SupplyAvailableSessions", (sessions: SessionT[]) => {
-                    console.log(sessions)
                     loadComplete();
                     setSessions(sessions);
                 });
@@ -62,7 +60,6 @@ const SessionPresentation = () => {
     )
     return (
         <>
-
             <div
                 className={`
             overflow-y-auto
@@ -85,18 +82,29 @@ const SessionPresentation = () => {
                                         <div
                                             key={`session-${index}`}
                                             className={`group
-                            flex flex-row relative
-                            justify-between
-                            w-[60%] h-auto
-                            px-[8%] text-white/60
-                            shadow-inner shadow-black rounded-md 
-                            hover:shadow-2xl hover:bg-foreground/95 hover:cursor-pointer
-                            border-t-2 border-x-[0.06px] hover:text-white
-                             border-white/10 font-bold
-                    `}
+                                                flex flex-row  relative
+                                                justify-between
+                                                w-[60%] h-auto
+                                                px-[8%] text-white/60
+                                                shadow-inner shadow-black rounded-md 
+                                                hover:shadow-2xl hover:bg-foreground/95 hover:cursor-pointer
+                                                border-t-2 border-x-[0.06px] hover:text-white
+                                                border-white/10 font-bold
+                                        `}
                                             onClick={() => handleSessionClick(session.sessionId)}
                                         >
-                                            <div> {session.gameName}</div>
+                                            <div >
+                                                <p>{session.gameName}</p>
+                                                <p className={`
+                                                    absolute hidden z-50
+                                                    group-hover:flex border-b-2 border-x
+                                                    text-white/60 uppercase 
+                                                     bg-background p-2 font-mainfont
+                                                     rounded-t-none rounded-2xl
+                                                     mt-2
+                                                    `}> {session.sessionId} </p>
+                                            </div>
+
                                             <div className={``}> {
                                                 // session.ruleCount ?? //can add after alter
                                                 0}</div>

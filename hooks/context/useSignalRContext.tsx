@@ -5,8 +5,6 @@ import { SessionT } from "@/lib/type";
 import { HubConnection } from "@microsoft/signalr";
 import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
-
-
 interface SignalRContext {
     isConnect: boolean;
     connect: () => Promise<void>;
@@ -28,7 +26,6 @@ interface clientRegisteredCallBack {
     onSupplySessionInfo?: () => void;
     onNotifyGameEnd?: () => void;
 }
-
 const SignalRContext = createContext<SignalRContext | undefined>(undefined);
 
 export const useSignalRContext = () => {
