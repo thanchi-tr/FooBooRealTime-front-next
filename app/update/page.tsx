@@ -4,7 +4,7 @@ import { toGuidId } from "@/lib/generator";
 import { useUser } from "@auth0/nextjs-auth0/client";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 interface gameContext {
     author: string,
@@ -25,12 +25,12 @@ const UpdateGamesContext = () => {
     const [tempVal, setTempVal] = useState("")
     const [rules, setRule] = useState<ruleT[]>([])
     const { user } = useUser();
+    const accessToken = useRef<string>("")
     const router = useRouter();
     const toHomeClickHandler = useCallback(
         () => { router.push("/") }
         , []
     );
-
     useEffect(
         () => {
             if (selectedOptionIndex > -1 && contexts.length > 0) {
@@ -56,19 +56,21 @@ const UpdateGamesContext = () => {
 
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games`;
         try {
-            const accessKey = await axios.get("/api/get-access-token", {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (accessKey.status != 200) {
-                console.error("Error to retrieve Access key");
-
+            if (accessToken.current == "") {
+                const accessKey = await axios.get("/api/get-access-token", {
+                    headers: { "Content-Type": "application/json", },
+                });
+                if (accessKey.status != 200) {
+                    console.error("Error to retrieve Access key");
+                    return;
+                }
+                accessToken.current = accessKey.data;
             }
+
             const response = await axios.get(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
-                    "Authorization": `Bearer ${accessKey.data}`,
+                    "Authorization": `Bearer ${accessToken.current}`,
                 },
             });
             setSelectedOptionIndex(-1);//reset
@@ -81,23 +83,24 @@ const UpdateGamesContext = () => {
         if (selectedOptionIndex == -1)
             return;
         const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
-
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/${contexts[selectedOptionIndex].gameId.replaceAll(` `, `%20`)}`;
 
         try {
-            const accessKey = await axios.get("/api/get-access-token", {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (accessKey.status != 200) {
-                console.error("Error to retrieve Access key");
-
+            if (accessToken.current == "") {
+                const accessKey = await axios.get("/api/get-access-token", {
+                    headers: { "Content-Type": "application/json", },
+                });
+                if (accessKey.status != 200) {
+                    console.error("Error to retrieve Access key");
+                    return;
+                }
+                accessToken.current = accessKey.data;
             }
+
             await axios.delete(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
-                    "Authorization": `Bearer ${accessKey.data}`,
+                    "Authorization": `Bearer ${accessToken.current}`,
                 },
             });
             // update the list
@@ -127,19 +130,20 @@ const UpdateGamesContext = () => {
             }),
         };
         try {
-            const accessKey = await axios.get("/api/get-access-token", {
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            });
-            if (accessKey.status != 200) {
-                console.error("Error to retrieve Access key");
-
+            if (accessToken.current == "") {
+                const accessKey = await axios.get("/api/get-access-token", {
+                    headers: { "Content-Type": "application/json", },
+                });
+                if (accessKey.status != 200) {
+                    console.error("Error to retrieve Access key");
+                    return;
+                }
+                accessToken.current = accessKey.data;
             }
             await axios.patch(apiUrl, gameData, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
-                    "Authorization": `Bearer ${accessKey.data}`,
+                    "Authorization": `Bearer ${accessToken.current}`,
                 },
             });
             // update the list

@@ -39,7 +39,7 @@ const CreateNewSession = (
             if (session != undefined) {
                 router.push(`/waitroom/${session.sessionId}?isOpenRule=true`);
             }
-        }, [session]
+        }, [session, router]
     )
 
     const handleCreation = () => {

@@ -1,7 +1,10 @@
-
+"use client"
 import Brand from '@/components/clients/Functional/UserNLogOut';
+import { useSignalRContext } from '@/hooks/context/useSignalRContext';
 import Link from 'next/link';
 const Guess = () => {
+    const { disconnect } = useSignalRContext();
+    disconnect();
     return (
         <div
             className={`

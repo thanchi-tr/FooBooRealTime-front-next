@@ -6,6 +6,7 @@ import { LoadingProvider } from "@/hooks/context/useLoadingContext";
 import { SignalRProvider } from "@/hooks/context/useSignalRContext";
 import { SessionProvider } from "@/hooks/context/useSessionContext";
 import { UserProvider } from "@auth0/nextjs-auth0/client";
+import { NotificationProvider } from "@/hooks/context/useNotificationContext";
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
@@ -38,14 +39,19 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${codaCaption.variable} ${geistSans.variable} ${geistMono.variable} antialiased overflow-clip`}
+        className={`${codaCaption.variable} ${geistSans.variable} ${geistMono.variable} antialiased overflow-clip
+          relative h-screen w-screen
+
+        `}
       >
         <UserProvider>
           <SignalRProvider>
             <LoadingProvider>
               <SessionProvider>
+                <NotificationProvider>
 
-                {children}
+                  {children}
+                </NotificationProvider>
               </SessionProvider>
 
             </LoadingProvider>

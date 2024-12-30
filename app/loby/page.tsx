@@ -1,15 +1,19 @@
+
 import SessionPresentation from "@/components/clients/Animation/SessionPresentation";
 import Brand from "@/components/clients/Functional/UserNLogOut";
 import Link from "next/link";
+import MessageComponent from "../../components/clients/Functional/MessageComponent";
 
 const Loby = async () => {
 
     return (<div
         className={`
+            relative
             flex flex-col
             h-screen w-screen
              bg-background items-center justify-center`}
     >
+        <MessageComponent />
         <div
             className={`uppercase 
                 text-xl md:text-2xl lg:text-3xl 2xl:text-5xl

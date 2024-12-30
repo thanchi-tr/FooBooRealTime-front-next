@@ -8,7 +8,7 @@ import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
 const ScoreScreen = () => {
-    const [playerScores, setPlayerScores] = useState<{ playerName: string, count: number, id: string }[]>([])
+    const [playerScores, setPlayerScores] = useState<{ playerName: string, count: number, id: string }[] | undefined>(undefined)
     const { id, name } = useSessionContext();
     const { connect, invoke, connection, connectionId } = useSignalRContext();
     const { startLoading } = useLoadingContext();
@@ -34,15 +34,15 @@ const ScoreScreen = () => {
         , []
     );
     const sanitisedScores = useCallback((playerScores: { playerName: string, count: number, id: string }[]) => [...playerScores].sort((a, b) => b.count - a.count), []);
-
     //load data
     useEffect(
         () => {
             if (connection == null) {
                 connect();
             } else {
+                connection.on("NotifyRejection", () => toLobyClickHandler()); // case session is block and player will be navigate back to loby
                 connection.on("SupplyScoreBoard", (scoreBoard: scoreT[]) => {
-                    console.log(scoreBoard)
+
                     const _playerScores = scoreBoard.map(({ correctCount, playerConnectionId }: scoreT) => {
                         // You can now use these variables to transform the object
                         return {
@@ -51,7 +51,6 @@ const ScoreScreen = () => {
                             id: playerConnectionId
                         };
                     });
-                    console.log(_playerScores)
                     setPlayerScores(sanitisedScores(_playerScores));
                 });
                 invoke("RequestScoreBoard")
@@ -144,7 +143,7 @@ const ScoreScreen = () => {
 
                         <div className={` text-sm `}> Correct</div>
                     </div>
-                    {playerScores.map(
+                    {playerScores && playerScores.map(
                         (score, i) => (<div
                             key={`score-${i}`}
                             className={`flex flex-row w-full pr-[5%]

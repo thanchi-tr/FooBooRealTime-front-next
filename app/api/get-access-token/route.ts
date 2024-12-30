@@ -3,7 +3,6 @@ import { NextResponse } from "next/server";
 import { getAccessToken } from "@auth0/nextjs-auth0";
 export async function GET() {
   try {
-    // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     const result = await getAccessToken();
     return NextResponse.json(result.accessToken);
   } catch (error: unknown) {

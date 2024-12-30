@@ -14,6 +14,7 @@ import { useUser } from "@auth0/nextjs-auth0/client";
 import NumberSetter from "../Functional/NumberSetter";
 import { scoreT } from "@/lib/type";
 import { toGuidId } from "@/lib/generator";
+import MessageComponent from "../Functional/MessageComponent";
 
 
 
@@ -25,7 +26,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         IsReady: boolean
     }[]>([])
     const { user } = useUser();
-    const { name, rules, setName, setRules, setId, setQuestion, time, setTime, setHost, host, id } = useSessionContext();
+    const { name, rules, setName, setRules, setId, setQuestion, time, setTime, setHost, host } = useSessionContext();
     const { isRuleOpen, OpenHandler } = useResultDisplayToggle(!(searchParams.get("isOpenRule") == "false"), !(searchParams.get("isOpenRule") == "false"));
     const { connect, connection, invoke, connectionId } = useSignalRContext();
     const { isLoaded, startLoading, loadComplete } = useLoadingContext();
@@ -51,6 +52,9 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                             IsReady: isReady
                         };
                     }));
+                })
+                connection.on("SetNewHost", (newHost: string) => {
+                    setHost(newHost);
                 })
                 connection.on("SupplySessionInfo", (
                     gameName: string,
@@ -102,6 +106,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     const toLobyClickHandler = useCallback(
         () => {
             startLoading();
+            setHost("");
             invoke("LeftSession");
             router.push("/loby")
         }
@@ -110,6 +115,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     const toHomeClickHandler = useCallback(
         () => {
             startLoading();
+            setHost("");
             invoke("LeftSession");
             router.push("/")
         }
@@ -122,12 +128,13 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             overflow-clip
             `}
     >
+        <MessageComponent />
         <div className={`absolute 
                 ${isLoaded ? "z-0" : "z-[100]"}
                  h-screen w-screen top-0`}>
             <LoadingScreen></LoadingScreen>
         </div>
-        <div className={`absolute w-[90vw] h-[90vh] top-0 
+        <div className={`absolute w-[90vw] h-[90vh] top-0 max-w-[680px]
              ${isRuleOpen ? "z-50 " : " "}
             `}>
             <Rule isRuleOpen={isRuleOpen} rules={rules} openHandler={OpenHandler} size={1}></Rule>

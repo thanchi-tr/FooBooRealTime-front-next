@@ -6,12 +6,16 @@ import { SessionT } from "@/lib/type"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import LoadingScreen from "./LoadingScreen"
+import { useSessionContext } from "@/hooks/context/useSessionContext"
 
 const SessionPresentation = () => {
     const router = useRouter()
     const [sessions, setSessions] = useState<SessionT[]>([]);
+    const [rulesCounts, setRuleCounts] = useState<number[]>([]);
     const { isLoaded, loadComplete } = useLoadingContext();
     const { connect, connection, invoke } = useSignalRContext();
+    const { reset } = useSessionContext();
+    useEffect(reset, []);
     const handleSessionClick = useCallback(
         (id: string) => {
             router.push(`/waitroom/${id}?isOpenRule=true`);
@@ -47,8 +51,9 @@ const SessionPresentation = () => {
     useEffect(
         () => {
             if (connection != null) {
-                connection.on("SupplyAvailableSessions", (sessions: SessionT[]) => {
+                connection.on("SupplyAvailableSessions", (sessions: SessionT[], rules: number[]) => {
                     loadComplete();
+                    setRuleCounts(rules);
                     setSessions(sessions);
                 });
             }
@@ -71,8 +76,8 @@ const SessionPresentation = () => {
             >
 
                 <div className={`h-[90%] w-full flex flex-col 
-            grow-0 shrink-0 overflow-clip
-            items-center gap-2`}>
+                    grow-0 shrink-0 overflow-clip
+                    items-center gap-2`}>
                     {
                         isLoaded
                             ? (sessions.length > 0)
@@ -96,18 +101,23 @@ const SessionPresentation = () => {
                                             <div >
                                                 <p>{session.gameName}</p>
                                                 <p className={`
-                                                    absolute hidden z-50
-                                                    group-hover:flex border-b-2 border-x
+                                                    -translate-y-[30%] group-hover:translate-y-0
+                                                    group-hover:duration-200
+                                                    absolute opacity-0 group-hover:z-50 -z-50
+                                                    group-hover:opacity-100 border-b-2 border-x
                                                     text-white/60 uppercase 
                                                      bg-background p-2 font-mainfont
                                                      rounded-t-none rounded-2xl
-                                                     mt-2 text-sm scale-90 text-center
+                                                     mt-2 text-sm scale-[85%] text-center
                                                     `}> {session.sessionId} </p>
                                             </div>
 
                                             <div className={``}> {
                                                 // session.ruleCount ?? //can add after alter
-                                                0}</div>
+                                                rulesCounts && (rulesCounts.length > index
+                                                    ? rulesCounts[index]
+                                                    : 0)
+                                            }</div>
                                             <div className={`
                                                 group-hover:animate-pulse
                                                 absolute top-0 left-0

@@ -5,18 +5,17 @@ import {
   ReactNode,
   useContext,
   useEffect,
-  useRef,
   useState,
 } from "react";
 import { useSignalRContext } from "./useSignalRContext";
 
 interface Message {
   detail: string;
-  time: number; // UTC value of date time
 }
 
 interface NotificationContext {
   history: Message[];
+  popHistory: () => void;
 }
 
 const NotificationContext = createContext<NotificationContext | undefined>(
@@ -31,40 +30,42 @@ export const useNotificationContext = () => {
   return context;
 };
 
-export const LoadingProvider = ({ children }: { children: ReactNode }) => {
+export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const { connection } = useSignalRContext();
-  const [isPing, setIsPing] = useState(false);
-  const [isNotifiable, setIsNotfiable] = useState(true);
+  const [isNotifiable] = useState(true);
   // allow to update without re-rendering
   const [history, setHistory] = useState<Message[]>([])
-  // const getMsg = () => {
-  //   const msg = history[history.length - 1];
-  //   const history = [...history]
-  //   setHistory()
-  //   return
-  // }
-  // when ever a new connection establish, attach notification listener to it
   useEffect(() => {
     if (isNotifiable && connection) {
-      connection.on("NotifyEvent", (msg: string) => {
+      connection.on("notifyevent", (msg: string) => {
         const newMsg: Message = {
           detail: msg,
-          time: Date.now(),
         };
 
         setHistory(
           prev => {
+            if (prev.includes(newMsg))
+              return prev;
             const newA = [...prev];
-            newA.push(newMsg);
+            newA.unshift(newMsg);
             return newA;
           })
       });
     }
   }, [connection]);
 
+  const popHistory = () => {
+    setHistory(
+      prev => {
+        let newA = [...prev];
+        newA.pop();
+        return newA;
+      }
+    )
+  }
 
   return (
-    <NotificationContext.Provider value={{ history }}>
+    <NotificationContext.Provider value={{ history, popHistory }}>
       {children}
     </NotificationContext.Provider>
   );

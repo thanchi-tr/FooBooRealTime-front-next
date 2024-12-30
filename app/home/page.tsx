@@ -1,6 +1,10 @@
+'use client'
 import Brand from '@/components/clients/Functional/UserNLogOut';
+import { useSignalRContext } from '@/hooks/context/useSignalRContext';
 import Link from 'next/link';
 const Home = () => {
+    const { disconnect } = useSignalRContext();
+    disconnect();
     const navs: { name: string, url: string }[] = [
         { name: "Home", url: "/" },
         { name: "Add", url: "/create-game" },

@@ -12,11 +12,6 @@ const NumberSetter = ({ name, setterHandler, curValue, isAdjustable }: Setter) =
     const [tempValue, setTempValue] = useState(curValue);
     const [isOpen, setIsOpen] = useState(false);
     const ToggleSetTime = useCallback(() => {
-        console.log("click")
-        console.log(isAdjustable)
-        console.log(tempValue)
-        console.log(curValue)
-        console.log(isOpen)
         if (!isAdjustable)
             return;
         if (tempValue != curValue) // out of synce
@@ -46,6 +41,7 @@ const NumberSetter = ({ name, setterHandler, curValue, isAdjustable }: Setter) =
                             group-hover:from-foreground/40
                             via-foreground/0 to-pink/0 
                             group-hover:animate-pulse
+                            
                             `} />
             <div className={`
                             absolute top-[20%] left-0
@@ -73,10 +69,11 @@ const NumberSetter = ({ name, setterHandler, curValue, isAdjustable }: Setter) =
                             group-hover:from-foreground5
                             via-foreground/0 to-pink/0 
                             group-hover:animate-pulse
+                             
                             `} />
             {name}
             <div className={
-                `relative
+                `relative ${isAdjustable ? "border-[1.2px] border-white/40" : ""}
                 bg-foreground/70 rounded-3xl hover:bg-foreground hover:cursor-pointer hover:text-white text-black px-2 `}
                 onClick={ToggleSetTime}
             >{curValue} {curValue < 2 ? "minute " : "minutes"}
@@ -106,7 +103,7 @@ const NumberSetter = ({ name, setterHandler, curValue, isAdjustable }: Setter) =
                     bg-foreground/80
                     shadow-inner shadow-black`}
                 onClick={ToggleSetTime}
-            > set game curValue</label>
+            > set game time</label>
             <div
                 className="absolute top-0 h-full w-full z-0
                 hover:cursor-pointer
@@ -126,7 +123,7 @@ const NumberSetter = ({ name, setterHandler, curValue, isAdjustable }: Setter) =
                 placeholder="Enter your answer"
                 className={`box-border z-50
                     bg-foreground rounded-md text-textColour text-3xl pl-2 text-center
-                    font-mainfont w-1/6 aspect-square scale-125 overflow-hidden
+                    font-mainfont w-1/6 aspect-square scale-100 overflow-hidden
                     appearance-none focus:outline-none`}
             />
         </form>

@@ -48,9 +48,8 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
          * A wrapper (UseCallback ) to provide an extra Loging functionality on top of server invokation 
          */
     const invoke = useCallback(async (methodName: string, ...args: any[]) => {
-        if (connection && isConnected) {
+        if (connection && connection.state == "Connected") {
             connection.invoke(methodName, ...args) // I am experience diffrent way to handle promiss (instead of asynchronous await)
-                .then(() => console.log("Invoked " + methodName + " successfully."))
                 .catch((err) => console.error("Error invoking " + methodName + ":", err));
         } else {
             console.warn("Connection rejected: Cannot invoke:", methodName);
@@ -75,18 +74,15 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
             console.warn("Already connected to SignalR.");
             return;
         }
-        const conn = CreateSignalRConnection(process.env.NEXT_PUBLIC_SIGNALR_HUB_URL ?? "");
+        const conn = CreateSignalRConnection(`${process.env.NEXT_PUBLIC_SIGNALR_HUB_URL}?name=${user?.name}`);
         conn.onclose((error) => {
             if (error) {
                 console.error("Error:@SignalR:OnDisconnect:" + error)
             }
             setIsConnected(false);
         });
-        conn.on("notifyevent", (msg: string) => {
-            console.log("SignalR: " + msg)
-        })
         conn.on("notifyerror", (err: string) => {
-            console.error("Error:@SignalR message stream: " + err)
+            console.log("Error:@SignalR message stream: " + err)
         })
         conn.on("SupplyConnectionId", (connectionId: string) => {
             setConnectionId(connectionId);
@@ -98,13 +94,11 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
         } catch (err) {
             console.error("Failed to start SignalR connection:", err);
         }
-    }, [connection, isConnected]);
+    }, [connection, isConnected, user]);
 
 
 
-    /**
-     * Handle disconnecting, reset the context
-     */
+    // Handle disconnecting, reset the Signal R connecting
     const disconnect = useCallback(async () => {
         if (connection) {
             try {
@@ -112,7 +106,7 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
                 setIsConnected(false);
                 setConnection(null);
             } catch (err) {
-                console.error("Failed to disconnect SignalR:", err);
+                console.warn("Failed to disconnect SignalR:", err);
             }
         }
     }, [connection]);

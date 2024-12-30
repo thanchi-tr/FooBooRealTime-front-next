@@ -9,6 +9,7 @@ import { useCallback, useEffect } from "react";
 import { useRouter } from 'next/navigation';
 import { useSessionContext } from "@/hooks/context/useSessionContext";
 import { useSignalRContext } from "@/hooks/context/useSignalRContext";
+import MessageComponent from "@/components/clients/Functional/MessageComponent";
 
 
 /***
@@ -76,13 +77,13 @@ const Game = () => {
             bg-background
             `}
         >
-
+            <MessageComponent />
             <div className={`
                 absolute h-full w-full top-0
                 ${timeRemain > 0 ? "" : "bg-foregroundShadow/35"}`}></div>
 
             <div className={`
-            absolute 
+            absolute max-w-[680px]
             w-[55vw] sm:w-[62vw] md:w-[50vw] xl:w-[54vw]
             h-[95vh] 
             -top-[5vh] z-0

@@ -37,7 +37,7 @@ const CreateSignalRConnection: (hubUrl: string) => HubConnection = (hubUrl) => {
       },
     })
     .withAutomaticReconnect([0, 2000, 5000, 10000])
-    .configureLogging(LogLevel.Information)
+    .configureLogging(LogLevel.Warning)
     .build();
 
   return connection;

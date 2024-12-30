@@ -13,7 +13,7 @@ const Rule = ({ isRuleOpen, rules, openHandler, size = 1, isHiding = false }: Ru
              flex flex-col 
                 ${size == 0 ? "gap-1" : "gap-5"}
              top-0 
-            h-full w-full
+            h-full w-full 
             bg-fadedforeground z-50
             shadow-2xl shadow-black
             transition-all duration-200 ease-in-out
@@ -28,6 +28,7 @@ const Rule = ({ isRuleOpen, rules, openHandler, size = 1, isHiding = false }: Ru
                 ${size == 2 ? "scale-125" :
                     size == 0 ? "scale-[85%]" : "scale-100"
                 }
+                
                 text-pretty h-auto font-bold font-mainfont`}>
                 The answer is determined by
                 <p className="inline uppercase underline text-black/80">combining</p> the
