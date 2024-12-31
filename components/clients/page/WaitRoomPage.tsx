@@ -12,7 +12,7 @@ import LoadingScreen from "../Animation/LoadingScreen";
 import { useSearchParams } from 'next/navigation';
 import { useUser } from "@auth0/nextjs-auth0/client";
 import NumberSetter from "../Functional/NumberSetter";
-import { scoreT } from "@/lib/type";
+import { ClientMethods, scoreT, ServerMethods } from "@/lib/type";
 import { toGuidId } from "@/lib/generator";
 import MessageComponent from "../Functional/MessageComponent";
 
@@ -38,14 +38,14 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     useEffect(
         () => {
             if (connection != null) {
-                connection.on("SetNewHost", (newHost: string) => setHost(newHost))
-                connection.on("SupplyGameTime", (gameTime: number) => setTime(gameTime));
-                connection.on("NotifyRejection", () => toLobyClickHandler()); // case session is block and player will be navigate back to loby
-                connection.on("SupplyInitQuestion", (initQuestion: number) => {
+                connection.on(ClientMethods.SetNewHost, (newHost: string) => setHost(newHost))
+                connection.on(ClientMethods.SupplyGameTime, (gameTime: number) => setTime(gameTime));
+                connection.on(ClientMethods.NotifyRejection, () => toLobyClickHandler()); // case session is block and player will be navigate back to loby
+                connection.on(ClientMethods.SupplyInitQuestion, (initQuestion: number) => {
                     setQuestion(initQuestion);
                     router.push("../game")
                 });
-                connection.on("NotifyReadyStatesChange", (scoreBoard: scoreT[]) => {
+                connection.on(ClientMethods.NotifyReadyStatesChange, (scoreBoard: scoreT[]) => {
                     setPlayerState(scoreBoard.map(({ isReady, playerConnectionId }: scoreT) => {
                         return {
                             name: "Dummy",
@@ -54,7 +54,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                         };
                     }));
                 })
-                connection.on("SupplySessionInfo", (
+                connection.on(ClientMethods.SupplySessionInfo, (
                     gameName: string,
                     rules_: Map<string, string>,
                     hostId: string,
@@ -71,7 +71,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                     loadComplete();
                 })
                 setId(sessionId);
-                invoke("JoinSession", sessionId);
+                invoke(ServerMethods.JoinSession, sessionId);
             }
             else {
                 startLoading();
@@ -90,13 +90,13 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     useEffect(
         () => { // set the default time of room to minimum (1 min)
             if (isHost && time == NOT_SET) {
-                invoke("SupplyGameTime", 1);
+                invoke(ServerMethods.SupplyGameTime, 1);
             }
         }, [time, isHost]
     )
     const playerReadyToggle = useCallback(() => {
         if (connection != null) {
-            invoke("TogglePlayerReady");
+            invoke(ServerMethods.TogglePlayerReady);
         }
     }, [playerState]);
 
@@ -104,7 +104,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         () => {
             startLoading();
             setHost("");
-            invoke("LeftSession");
+            invoke(ServerMethods.LeftSession);
             router.push("/loby")
         }, []
     );
@@ -112,7 +112,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
         () => {
             startLoading();
             setHost("");
-            invoke("LeftSession");
+            invoke(ServerMethods.LeftSession);
             router.push("/")
         }, []
     );

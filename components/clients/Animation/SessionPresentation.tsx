@@ -2,7 +2,7 @@
 
 import { useLoadingContext } from "@/hooks/context/useLoadingContext"
 import { useSignalRContext } from "@/hooks/context/useSignalRContext"
-import { SessionT } from "@/lib/type"
+import { ClientMethods, ServerMethods, SessionT } from "@/lib/type"
 import { useRouter } from "next/navigation"
 import { useCallback, useEffect, useState } from "react"
 import LoadingScreen from "./LoadingScreen"
@@ -33,7 +33,7 @@ const SessionPresentation = () => {
     useEffect(
         () => {
             if (connection != null) {
-                connection.on("SupplyAvailableSessions", (sessions: SessionT[], rules: number[]) => {
+                connection.on(ClientMethods.SupplyAvailableSessions, (sessions: SessionT[], rules: number[]) => {
                     loadComplete();
                     setRuleCounts(rules);
                     setSessions(sessions);
@@ -41,7 +41,7 @@ const SessionPresentation = () => {
             }
             if (connection != null && connection.state == "Connected") {
                 try {
-                    setTimeout(async () => await invoke("GetAvailableSessions"), 2000);
+                    setTimeout(async () => await invoke(ServerMethods.RequestAvailableSessions), 2000);
                 } catch (err) {
                     console.error("Error: invoking method:", err);
                 }

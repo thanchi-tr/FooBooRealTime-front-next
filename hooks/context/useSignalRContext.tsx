@@ -1,7 +1,7 @@
 "use client";
 
 import CreateSignalRConnection from "@/lib/signalrClients";
-import { SessionT } from "@/lib/type";
+import { ClientMethods, SessionT } from "@/lib/type";
 import { HubConnection } from "@microsoft/signalr";
 import { createContext, useContext, ReactNode, useState, useCallback, useEffect } from "react";
 import { useUser } from "@auth0/nextjs-auth0/client";
@@ -81,10 +81,10 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
             }
             setIsConnected(false);
         });
-        conn.on("notifyerror", (err: string) => {
+        conn.on(ClientMethods.NotifyError, (err: string) => {
             console.log("Error:@SignalR message stream: " + err)
         })
-        conn.on("SupplyConnectionId", (connectionId: string) => {
+        conn.on(ClientMethods.SupplyConnectionId, (connectionId: string) => {
             setConnectionId(connectionId);
         })
         try {

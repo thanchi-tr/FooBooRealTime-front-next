@@ -1,7 +1,7 @@
 'use client';
 
 import { useSignalRContext } from "@/hooks/context/useSignalRContext";
-import { SessionT } from "@/lib/type";
+import { ClientMethods, ServerMethods, SessionT } from "@/lib/type";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
@@ -20,8 +20,8 @@ const CreateNewSession = () => {
                 connect();
                 return;
             }
-            connection.on("SupplyGameContexts", (context: string[]) => setNameOptions(context));
-            invoke("RequestAvailableGameContexts");
+            connection.on(ClientMethods.SupplyGameContexts, (context: string[]) => setNameOptions(context));
+            invoke(ServerMethods.RequestAvailableGameContexts);
         }, [connection]
     )
 
@@ -35,10 +35,10 @@ const CreateNewSession = () => {
 
     const handleCreation = useCallback(() => {
         if (selectedOptionIndex >= 0) {
-            connection?.on("SupplySession", (session: SessionT) => {
+            connection?.on(ClientMethods.SupplySession, (session: SessionT) => {
                 setSession(session);
             })
-            invoke("RequestNewSession", nameOptions[selectedOptionIndex]);
+            invoke(ServerMethods.RequestNewSession, nameOptions[selectedOptionIndex]);
         }
     }, [selectedOptionIndex, connection, session])
     return (

@@ -10,6 +10,7 @@ import { useRouter } from 'next/navigation';
 import { useSessionContext } from "@/hooks/context/useSessionContext";
 import { useSignalRContext } from "@/hooks/context/useSignalRContext";
 import MessageComponent from "@/components/clients/Functional/MessageComponent";
+import { ClientMethods, ServerMethods } from "@/lib/type";
 /***
  * Once every information is loaded: 
  *  <check load context> :: it direct how load screen behave
@@ -40,8 +41,8 @@ const Game = () => {
                 return;
             }
             triggerStart();
-            connection.on("SupplyQuestion", (question) => setQuestion(question))
-            connection.on("notifyGameEnd", () => router.push("../score/"))
+            connection.on(ClientMethods.SupplyQuestion, (question) => setQuestion(question))
+            connection.on(ClientMethods.NotifyGameEnd, () => router.push("../score/"))
         }, [connection]
     )
     useEffect(() => { // short cut mapping
@@ -58,7 +59,7 @@ const Game = () => {
         () => {
             reset()
             startLoading();
-            invoke("LeftSession");
+            invoke(ServerMethods.LeftSession);
             router.push("/loby")
         }, []
     );

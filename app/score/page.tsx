@@ -2,7 +2,7 @@
 import { useLoadingContext } from "@/hooks/context/useLoadingContext";
 import { useSessionContext } from "@/hooks/context/useSessionContext";
 import { useSignalRContext } from "@/hooks/context/useSignalRContext";
-import { scoreT } from "@/lib/type";
+import { ClientMethods, scoreT, ServerMethods } from "@/lib/type";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
 
@@ -18,14 +18,14 @@ const ScoreScreen = () => {
     const toHomeClickHandler = useCallback(
         () => {
             startLoading();
-            invoke("LeftSession");
+            invoke(ServerMethods.LeftSession);
             router.push("/")
         }, []
     );
     const toLobyClickHandler = useCallback(
         () => {
             startLoading();
-            invoke("LeftSession");
+            invoke(ServerMethods.LeftSession);
             router.push("/loby")
         }, []
     );
@@ -36,8 +36,8 @@ const ScoreScreen = () => {
             if (connection == null) {
                 connect();
             } else {
-                connection.on("NotifyRejection", () => toLobyClickHandler()); // case session is block and player will be navigate back to loby
-                connection.on("SupplyScoreBoard", (scoreBoard: scoreT[]) => {
+                connection.on(ClientMethods.NotifyRejection, () => toLobyClickHandler()); // case session is block and player will be navigate back to loby
+                connection.on(ClientMethods.SupplyScoreBoard, (scoreBoard: scoreT[]) => {
                     const _playerScores = scoreBoard.map(({ correctCount, playerConnectionId }: scoreT) => {
                         // You can now use these variables to transform the object
                         return {
@@ -48,7 +48,7 @@ const ScoreScreen = () => {
                     });
                     setPlayerScores(sanitisedScores(_playerScores));
                 });
-                invoke("RequestScoreBoard")
+                invoke(ServerMethods.RequestScoreBoard)
             }
         }, [connection]
     )

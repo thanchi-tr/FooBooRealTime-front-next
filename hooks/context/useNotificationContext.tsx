@@ -8,6 +8,7 @@ import {
   useState,
 } from "react";
 import { useSignalRContext } from "./useSignalRContext";
+import { ClientMethods } from "@/lib/type";
 
 interface Message {
   detail: string;
@@ -37,7 +38,7 @@ export const NotificationProvider = ({ children }: { children: ReactNode }) => {
   const [history, setHistory] = useState<Message[]>([])
   useEffect(() => {
     if (isNotifiable && connection) {
-      connection.on("notifyevent", (msg: string) => {
+      connection.on(ClientMethods.NotifyEvent, (msg: string) => {
         const newMsg: Message = {
           detail: msg,
         };
