@@ -3,53 +3,44 @@
 import { useSignalRContext } from "@/hooks/context/useSignalRContext";
 import { SessionT } from "@/lib/type";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation"
 
-const CreateNewSession = (
-
-
-) => {
-
-    const router = useRouter()
+const CreateNewSession = () => {
     const { connect, connection, invoke } = useSignalRContext();
     const [nameOptions, setNameOptions] = useState<string[]>([])
     const [isShowOption, setIsShowOption] = useState(false);
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(-1);
     const [session, setSession] = useState<SessionT | undefined>(undefined);
-
+    const router = useRouter()
 
     useEffect(
         () => {
             if (connection == null) {
                 connect();
-            } else {
-                connection.on("SupplyGameContexts", (context: string[]) => {
-                    setNameOptions(context);
-                });
-
-                invoke("RequestAvailableGameContexts");
+                return;
             }
+            connection.on("SupplyGameContexts", (context: string[]) => setNameOptions(context));
+            invoke("RequestAvailableGameContexts");
         }, [connection]
     )
 
-
     useEffect(
-        () => {
+        () => { // once we obtain all the session information, move to wait room
             if (session != undefined) {
                 router.push(`/waitroom/${session.sessionId}?isOpenRule=true`);
             }
-        }, [session, router]
+        }, [session]
     )
 
-    const handleCreation = () => {
+    const handleCreation = useCallback(() => {
         if (selectedOptionIndex >= 0) {
             connection?.on("SupplySession", (session: SessionT) => {
                 setSession(session);
             })
             invoke("RequestNewSession", nameOptions[selectedOptionIndex]);
         }
-    }
+    }, [selectedOptionIndex, connection, session])
     return (
         <div
             className={`
@@ -146,17 +137,13 @@ const CreateNewSession = (
                                         onClick={() => {
                                             setSelectedOptionIndex(prev => (prev != index) ? index : -1);
                                         }}
-                                    >{name}</div>
+                                    >{name}
+                                    </div>
                                 )
                             )}
                         </div>
-
                     </div>
-
                 </div>
-
-                {/**name selection */}
-
             </div>
             <div />
             <div className={`absolute bottom-[10vh] h-auto w-full flex justify-center`}>
@@ -172,7 +159,7 @@ const CreateNewSession = (
                         shadow-inner  font-bold bg-foregroundShadow/20
                         hover:cursor-pointer
                 `}
-                    onClick={() => { handleCreation() }}
+                    onClick={handleCreation}
                 >
 
                     <div
@@ -181,7 +168,6 @@ const CreateNewSession = (
                                 font-mainfont text-black/80 uppercase tracking-tighter
                             shadow-md shadow-black/70 text-center
                         `}
-
                     >
                         <p className={`group-hover:hidden`}>new </p>
                         <p className={`hidden group-hover:block `}>click to add</p>

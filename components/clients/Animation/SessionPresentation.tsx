@@ -15,38 +15,20 @@ const SessionPresentation = () => {
     const { isLoaded, loadComplete } = useLoadingContext();
     const { connect, connection, invoke } = useSignalRContext();
     const { reset } = useSessionContext();
-    useEffect(reset, []);
+    useEffect(
+        () => {
+            reset();
+            if (connection == null) {
+                connect();// loading the session
+            }
+        }, []
+    )
     const handleSessionClick = useCallback(
         (id: string) => {
             router.push(`/waitroom/${id}?isOpenRule=true`);
         },
         [router]
     );
-    const handleCreateNewSessionClick = useCallback(
-        () => {
-            // startLoading();
-            router.push(`/create-new-session/`);
-        },
-        [router]
-    );
-    const asyncWrapper = async () => {
-        if (connection != null && connection.state === "Connected") {
-            try {
-                // await invoke("RequestNewSession", "new Game");
-                setTimeout(async () => await invoke("GetAvailableSessions"), 2000);
-            } catch (err) {
-                console.error("Error: invoking method:", err);
-            }
-        }
-    }
-    useEffect(
-        () => {
-            // loading the session
-            if (connection == null) {
-                connect();
-            }
-        }, []
-    )
     // once the connect the attempt to get the session info
     useEffect(
         () => {
@@ -58,11 +40,20 @@ const SessionPresentation = () => {
                 });
             }
             if (connection != null && connection.state == "Connected") {
-                asyncWrapper();
+                try {
+                    setTimeout(async () => await invoke("GetAvailableSessions"), 2000);
+                } catch (err) {
+                    console.error("Error: invoking method:", err);
+                }
             }
         }
         , [connection]
     )
+    const handleCreateNewSessionClick = useCallback(
+        () => router.push(`/create-new-session/`)
+        , [router]
+    );
+
     return (
         <>
             <div
@@ -154,16 +145,15 @@ const SessionPresentation = () => {
                                         flex flex-row relative
                                         justify-between font-mainfont
                                         w-[60%] h-auto
-                                        px-[8%] 
+                                        px-[8%] z-50
                                         shadow-inner shadow-black rounded-md 
                                         hover:shadow-2xl hover:bg-foreground/70 hover:cursor-pointer
                                         border-t-2 border-x-[0.06px] hover:text-white
                                         border-white/10 font-bold
                                 `}
+                                    onClick={handleCreateNewSessionClick}
                                 >
-                                    <div className="z-50"
-                                        onClick={handleCreateNewSessionClick}
-                                    >
+                                    <div >
                                         <p className={`flex group-hover:hidden text-white/60`}>No session</p>
                                         <p className={`group-hover:flex hidden uppercase text-white`}>Add session</p>
                                     </div>

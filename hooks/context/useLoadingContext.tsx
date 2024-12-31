@@ -24,13 +24,6 @@ export const LoadingProvider = ({ children }: { children: ReactNode }) => {
   const [isStartLoading, setIsStartload] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // useEffect(
-  //   () => {
-  //     if (isStartLoading)
-  //       setTimeout(() => setIsLoaded(true), 3000)
-  //   },
-  //   [isStartLoading]
-  // )
   const simulateLoadTask = () => setIsStartload(true);
   const reset = () => setIsLoaded(false);
   //actual loading method

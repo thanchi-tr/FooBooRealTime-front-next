@@ -38,6 +38,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
     useEffect(
         () => {
             if (connection != null) {
+                connection.on("SetNewHost", (newHost: string) => setHost(newHost))
                 connection.on("SupplyGameTime", (gameTime: number) => setTime(gameTime));
                 connection.on("NotifyRejection", () => toLobyClickHandler()); // case session is block and player will be navigate back to loby
                 connection.on("SupplyInitQuestion", (initQuestion: number) => {
@@ -47,14 +48,11 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
                 connection.on("NotifyReadyStatesChange", (scoreBoard: scoreT[]) => {
                     setPlayerState(scoreBoard.map(({ isReady, playerConnectionId }: scoreT) => {
                         return {
-                            name: /*playerConnectionId*/ "June",
+                            name: "Dummy",
                             id: playerConnectionId,
                             IsReady: isReady
                         };
                     }));
-                })
-                connection.on("SetNewHost", (newHost: string) => {
-                    setHost(newHost);
                 })
                 connection.on("SupplySessionInfo", (
                     gameName: string,
@@ -86,7 +84,6 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             if (host != "" // if this client is the host of session
                 && toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf") == host) {
                 setIsHost(true);
-
             }
         }, [host]
     )
@@ -109,8 +106,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             setHost("");
             invoke("LeftSession");
             router.push("/loby")
-        }
-        , []
+        }, []
     );
     const toHomeClickHandler = useCallback(
         () => {
@@ -118,8 +114,7 @@ const WaitRoomPage = ({ sessionId }: { sessionId: string }) => {
             setHost("");
             invoke("LeftSession");
             router.push("/")
-        }
-        , []
+        }, []
     );
 
     return (<><div

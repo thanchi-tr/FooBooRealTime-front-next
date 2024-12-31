@@ -27,10 +27,21 @@ const UpdateGamesContext = () => {
     const { user } = useUser();
     const accessToken = useRef<string>("")
     const router = useRouter();
-    const toHomeClickHandler = useCallback(
-        () => { router.push("/") }
-        , []
-    );
+    const toHomeClickHandler = useCallback(() => router.push("/"), []);
+
+    const RequestAccessToken = useCallback(
+        async () => {
+            if (accessToken.current != "") return;
+            const accessKey = await axios.get("/api/get-access-token", {
+                headers: { "Content-Type": "application/json", },
+            });
+            if (accessKey.status != 200) {
+                console.error("Error to retrieve Access key");
+                return;
+            }
+            accessToken.current = accessKey.data;
+        }, [accessToken]
+    )
     useEffect(
         () => {
             if (selectedOptionIndex > -1 && contexts.length > 0) {
@@ -48,25 +59,14 @@ const UpdateGamesContext = () => {
                     }
                 }
             }
-        },
-        [selectedOptionIndex]
+        }, [selectedOptionIndex]
     )
     const GetGamesContext = async () => {
         const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
 
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games`;
         try {
-            if (accessToken.current == "") {
-                const accessKey = await axios.get("/api/get-access-token", {
-                    headers: { "Content-Type": "application/json", },
-                });
-                if (accessKey.status != 200) {
-                    console.error("Error to retrieve Access key");
-                    return;
-                }
-                accessToken.current = accessKey.data;
-            }
-
+            await RequestAccessToken(); // ensure the AccessToken reference a access token
             const response = await axios.get(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
@@ -86,17 +86,7 @@ const UpdateGamesContext = () => {
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/${contexts[selectedOptionIndex].gameId.replaceAll(` `, `%20`)}`;
 
         try {
-            if (accessToken.current == "") {
-                const accessKey = await axios.get("/api/get-access-token", {
-                    headers: { "Content-Type": "application/json", },
-                });
-                if (accessKey.status != 200) {
-                    console.error("Error to retrieve Access key");
-                    return;
-                }
-                accessToken.current = accessKey.data;
-            }
-
+            await RequestAccessToken(); // ensure the AccessToken reference a access token
             await axios.delete(apiUrl, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
@@ -113,7 +103,6 @@ const UpdateGamesContext = () => {
         if (selectedOptionIndex == -1)
             return;
         const playerId = toGuidId(user?.sub ?? "09ac5e84-db5c-4131-0d1c-08dd1c5384cf");
-
         const apiUrl = `https://localhost:5001/Api/Players/${playerId}/Games/${contexts[selectedOptionIndex].gameId.replaceAll(` `, `%20`)}`;
 
         const gameData = {
@@ -130,16 +119,7 @@ const UpdateGamesContext = () => {
             }),
         };
         try {
-            if (accessToken.current == "") {
-                const accessKey = await axios.get("/api/get-access-token", {
-                    headers: { "Content-Type": "application/json", },
-                });
-                if (accessKey.status != 200) {
-                    console.error("Error to retrieve Access key");
-                    return;
-                }
-                accessToken.current = accessKey.data;
-            }
+            await RequestAccessToken(); // ensure the AccessToken reference a access token
             await axios.patch(apiUrl, gameData, {
                 headers: {
                     "Content-Type": "application/json-patch+json",
@@ -155,10 +135,10 @@ const UpdateGamesContext = () => {
     }
     useEffect(
         () => {
-            GetGamesContext();
+            GetGamesContext()
         }, []
     )
-
+    // This submit question is basically need to update on every single state(s) change, so no need to wrap inside useCallback
     const submitNewKey = () => {
         setRule(
             prev => {
@@ -174,7 +154,7 @@ const UpdateGamesContext = () => {
             }
         )
     }
-    const updateKey = (index: number, key: number) => {
+    const updateKey = useCallback((index: number, key: number) => {
         setRule(
             prev => {
                 const newRule = [...prev];
@@ -183,18 +163,17 @@ const UpdateGamesContext = () => {
                 return newRule;
             }
         )
-    }
-    const updateVal = (index: number, val: string) => {
+    }, [rules, setRule])
+    const updateVal = useCallback((index: number, val: string) => {
         setRule(
             prev => {
                 const newRule = [...prev];
-
                 newRule[index].val = val;
                 return newRule;
             }
         )
-    }
-    const deleteTempVal = (index: number) => {
+    }, [rules, setRule])
+    const deleteTempVal = useCallback((index: number) => {
         setRule(
             prev => {
                 const newRule = [...prev];
@@ -202,7 +181,7 @@ const UpdateGamesContext = () => {
                 return newRule;
             }
         )
-    }
+    }, [rules, setRule])
     return (
         <div className={`
             h-screen w-screeen 
@@ -317,11 +296,11 @@ const UpdateGamesContext = () => {
 
             <div
                 className={`
-                h-full w-full
-                flex flex-col md:flex-row
-                gap-1
-                items-start 
-               `}
+                    h-full w-full
+                    flex flex-col md:flex-row
+                    gap-1
+                    items-start 
+                `}
             >
 
                 <div
@@ -329,7 +308,7 @@ const UpdateGamesContext = () => {
                         flex gap-1 
                         ml-[8%]
                         h-[6vw] md:h-1/12
-                        w-[90%]
+                        w-[90%] md:ml-[10%] lg:ml-[15%] lg:mr-[5%]
                     `}
                 >
 
@@ -390,13 +369,13 @@ const UpdateGamesContext = () => {
                 <div
                     className={`
                     flex justify-center mt-[36vw] md:mt-0
-                    h-[calc(100vh-46vw)] md:h-[90%] w-full 
+                    h-[calc(100vh-46vw)] max-h-[920px] md:h-[90%] w-full 
                     `}
                 >
                     <div
                         className={`
                             bg-foreground/70 
-                            w-[80%] md:w-[60%] lg:w-[50%] xl:w-[45%]
+                            w-[80%] md:w-[78%] lg:w-[50%] xl:w-[45%]
                             h-[82%] flex-grow-0 flex-shrink-0
                             flex flex-col overflow-clip
                             rounded-b-3xl border-t-8 border-black/80`}
@@ -461,12 +440,34 @@ const UpdateGamesContext = () => {
                                                 value={rule.val}
                                                 onChange={(e) => updateVal(index, e.target.value)}
                                             />
+
                                             <div className="
-                                                absolute bg-midground-1 h-full w-auto text-white border-[1px] border-black scale-x-125 translate-x-1
+                                                absolute bg-midground-1 
+                                                h-full w-auto text-white border-[1px] border-black
+                                                translate-x-1
                                                 hover:cursor-pointer
                                                 "
                                                 onClick={() => { deleteTempVal(index) }}
-                                            >X</div>
+                                            >
+                                                <div className={`
+                                                    relative group
+                                                    hover:cursor-pointer
+                                                    self-start rounded-md
+                                                    duration-150
+                                                    h-1/2 md:h-full aspect-square 
+
+                                                    bg-fadedforeground/95`}
+
+                                                >
+                                                    <span className={`absolute group-hover:scale-x-100
+                                                            group-hover:rotate-45 transition-transform duration-300 scale-x-75 delay-75
+                                                            top-1/2 translate-y-[-50%] h-[5px] w-full bg-white`} />
+                                                    <span className={`absolute group-hover:scale-x-100
+                                                            group-hover:-rotate-45 transition-transform duration-300 scale-x-75 delay-75
+                                                            top-1/2 translate-y-[-50%] h-[5px] w-full bg-white`} />
+                                                </div>
+
+                                            </div>
                                         </div>
                                     )
                                     : <></>

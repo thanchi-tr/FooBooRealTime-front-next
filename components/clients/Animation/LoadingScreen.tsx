@@ -30,7 +30,7 @@ const LoadingScreen = () => {
     return (<div
         className={`
             ${isLoaded ? "hidden" : "flex"}
-             flex-col  
+            flex-col  
             justify-between items-center
             h-full w-full
             bg-foregroundShadow    
@@ -45,7 +45,7 @@ const LoadingScreen = () => {
         <div className={`
             flex justify-center
             absolute bottom-[15%]
-            h-[10vh] w-full
+            h-[10vh] w-full pt-3
             `}>
             <motion.div className={`
                 flex justify-evenly
