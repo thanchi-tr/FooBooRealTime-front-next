@@ -74,7 +74,7 @@ export const SignalRProvider = ({ children }: { children: ReactNode }) => {
             console.warn("Already connected to SignalR.");
             return;
         }
-        const conn = CreateSignalRConnection(`${process.env.NEXT_PUBLIC_SIGNALR_HUB_URL}?name=${user?.name}`);
+        const conn = CreateSignalRConnection(`https://localhost:5001/hub/game?name=${user?.name}`);
         conn.onclose((error) => {
             if (error) {
                 console.error("Error:@SignalR:OnDisconnect:" + error)

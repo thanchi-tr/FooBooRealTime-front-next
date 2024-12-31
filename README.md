@@ -1,12 +1,12 @@
 ## Getting Started
 
-Clone the both the Front and Back:
+Clone the both the Front and Back: - add your .env.local Configuration that align with the mapped next.config.ts.
 
 ## Learn More
 
 My application is a
 
-> **Real Time⏱⏱⏱ ⒻⓘⓏⓏⒷⓤⓏⓏ text-based Game 🎮🎮🎮** >
+> **Real Time⏱⏱⏱ Multi-player ⒻⓘⓏⓏⒷⓤⓏⓏ text-based Game 🎮🎮🎮** >
 
 <img src="./public/Login.png"
          alt="Home Page"
@@ -112,5 +112,3 @@ My application is a
 </figure>
 
 # Up-comming:
-
-[ ] Multiplayer feature.
